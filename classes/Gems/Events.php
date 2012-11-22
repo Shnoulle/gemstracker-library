@@ -48,11 +48,12 @@ class Gems_Events extends Gems_Loader_TargetLoaderAbstract
 {
     const EVENTS_DIR              = 'Event';
 
-    const TRACK_COMPLETION_EVENT        = 'Track/Completed';
+    const RECEPTIONCODE_EVENT           = 'ReceptionCode';
     const ROUND_CHANGED_EVENT           = 'Round/Changed';
     const SURVEY_BEFORE_ANSWERING_EVENT = 'Survey/BeforeAnswering';
     const SURVEY_COMPLETION_EVENT       = 'Survey/Completed';
     const SURVEY_DISPLAY_EVENT          = 'Survey/Display';
+    const TRACK_COMPLETION_EVENT        = 'Track/Completed';
 
     /**
      * Each event type must implement an event class or interface derived
@@ -63,11 +64,12 @@ class Gems_Events extends Gems_Loader_TargetLoaderAbstract
      * @var array containing eventType => eventClass for all event classes
      */
     protected $_eventClasses = array(
-        self::TRACK_COMPLETION_EVENT        => 'Gems_Event_TrackCompletedEventInterface',
+        self::RECEPTIONCODE_EVENT           => 'Gems_Event_ReceptionCodeEventInterface',
         self::ROUND_CHANGED_EVENT           => 'Gems_Event_RoundChangedEventInterface',
         self::SURVEY_BEFORE_ANSWERING_EVENT => 'Gems_Event_SurveyBeforeAnsweringEventInterface',
         self::SURVEY_COMPLETION_EVENT       => 'Gems_Event_SurveyCompletedEventInterface',
         self::SURVEY_DISPLAY_EVENT          => 'Gems_Event_SurveyDisplayEventInterface',
+        self::TRACK_COMPLETION_EVENT        => 'Gems_Event_TrackCompletedEventInterface'
     );
 
     /**
@@ -204,6 +206,15 @@ class Gems_Events extends Gems_Loader_TargetLoaderAbstract
 
         return $event;
     }
+    
+    /**
+     *
+     * @return array eventname => string
+     */
+    public function listReceptionCodeEvents()
+    {
+        return $this->_listEvents(self::RECEPTIONCODE_EVENT);
+    }
 
     /**
      *
@@ -249,9 +260,19 @@ class Gems_Events extends Gems_Loader_TargetLoaderAbstract
     {
         return $this->_listEvents(self::TRACK_COMPLETION_EVENT);
     }
-
+    
     /**
      *
+     * @param string $eventName
+     * @return Gems_Event_ReceptionCodeEventInterface
+     */
+    public function loadReceptionCodeEvent($eventName)
+    {
+        return $this->_loadEvent($eventName, self::RECEPTIONCODE_EVENT);
+    }
+
+    /**     
+     * 
      * @param string $eventName
      * @return Gems_Event_RoundChangedEventInterface
      */
