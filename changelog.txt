@@ -1,3 +1,8 @@
+Important changes from 1.5.x => 1.6
+============================================================
+Reception codes moved from Util to Tracker, update should warn for local classes
+--> Scan your own code for reference to Gems_Util_ReceptionCode or util->getReceptionCode
+
 Important changes from 1.5.5 => 1.5.6
 ============================================================
 Transparent lessCss compiling was added. When you add a .less file GemsTracker will take care of compiling it to css. If you need to force a recompile, add the ?compilecss parameter to your url.

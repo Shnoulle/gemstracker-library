@@ -504,7 +504,7 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
 
     public function getReceptionCode()
     {
-        return $this->_respTrackData['gr2t_reception_code'];
+        return $this->tracker->getReceptionCode($this->_respTrackData['gr2t_reception_code']);
     }
 
     /**
@@ -741,7 +741,7 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
     {
         // Make sure it is a Gems_Tracker_ReceptionCode object
         if (! $code instanceof Gems_Tracker_ReceptionCode) {
-            $code = $this->util->getReceptionCode($code);
+            $code = $this->tracker->getReceptionCode($code);
         }
         $changed = 0;
 

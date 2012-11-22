@@ -236,7 +236,7 @@ class DeleteTrackTokenSnippet extends Gems_Tracker_Snippets_EditTokenSnippetAbst
     protected function saveData()
     {
         // Get the code object
-        $code = $this->util->getReceptionCode($this->formData['gto_reception_code']);
+        $code = $this->loader->getTracker()->getReceptionCode($this->formData['gto_reception_code']);
 
         // Use the token function as that cascades the consent code
         $changed = $this->token->setReceptionCode($code, $this->formData['gto_comment'], $this->session->user_id);

@@ -268,7 +268,7 @@ abstract class Gems_Default_RespondentAction extends Gems_Controller_BrowseEditA
             $data = $_POST + $data;
             if ($form->isValid($data )) {
 
-                $code = $this->util->getReceptionCode($data['gr2o_reception_code']);
+                $code = $this->loader->getTracker()->getReceptionCode($data['gr2o_reception_code']);
 
                 // Is the respondent really removed
                 if (! $code->isSuccess()) {

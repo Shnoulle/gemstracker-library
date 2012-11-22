@@ -45,7 +45,7 @@
  * @license    New BSD License
  * @since      Class available since version 1.6
  */
-class Gems_Event_ReceptionCodeEventInterface extends Gems_Event_EventInterface
+interface Gems_Event_ReceptionCodeEventInterface extends Gems_Event_EventInterface
 {
     public function setReceptionCode($object, $receptionCode, $comment, $userId);
 }

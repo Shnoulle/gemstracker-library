@@ -214,7 +214,7 @@ class DeleteSingleSurveyInSourceTokenSnippet extends Gems_Tracker_Snippets_EditS
      */
     protected function saveData()
     {
-        $code = $this->util->getReceptionCode($this->formData['gto_reception_code']);
+        $code = $this->loader->getTracker()->getReceptionCode($this->formData['gto_reception_code']);
 
         $changed = $this->token->setReceptionCode($code, $this->formData['gto_comment'], $this->session->user_id);
 

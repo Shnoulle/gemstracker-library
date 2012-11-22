@@ -123,6 +123,14 @@ interface Gems_Tracker_TrackerInterface
      * @return Gems_Tracker_Form_AskTokenForm
      */
     public function getAskTokenForm($args_array = null);
+    
+    /**
+     * Returns a single reception code object.
+     *
+     * @param string $code
+     * @return Gems_Tracker_ReceptionCode
+     */
+    public function getReceptionCode($code);
 
     /**
      *

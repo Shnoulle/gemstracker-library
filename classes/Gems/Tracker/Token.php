@@ -1411,7 +1411,7 @@ class Gems_Tracker_Token extends Gems_Registry_TargetAbstract
     {
         // Make sure it is a Gems_Tracker_ReceptionCode object
         if (! $code instanceof Gems_Tracker_ReceptionCode) {
-            $code = $this->util->getReceptionCode($code);
+            $code = $this->tracker->getReceptionCode($code);
         }
 
         $values['gto_reception_code'] = $code->getCode();

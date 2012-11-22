@@ -226,7 +226,7 @@ class Gems_Export_RespondentExport extends Gems_Registry_TargetAbstract
      */
     protected function _exportTrack(Gems_Tracker_RespondentTrack $track)
     {
-        if ($track->getReceptionCode() != GemsEscort::RECEPTION_OK) {
+        if (!$track->getReceptionCode()->isSuccess()) {
             return;
         }
 
