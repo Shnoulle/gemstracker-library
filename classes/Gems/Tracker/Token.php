@@ -842,13 +842,13 @@ class Gems_Tracker_Token extends Gems_Registry_TargetAbstract
     }
 
     /**
-     * Return the Gems_Util_ReceptionCode object
+     * Return the Gems_Tracker_ReceptionCode object
      *
-     * @return Gems_Util_ReceptionCode reception code
+     * @return Gems_Tracker_ReceptionCode reception code
      */
     public function getReceptionCode()
     {
-        return $this->util->getReceptionCode($this->_gemsData['gto_reception_code']);
+        return $this->tracker->getReceptionCode($this->_gemsData['gto_reception_code']);
     }
 
     /**
@@ -1402,15 +1402,15 @@ class Gems_Tracker_Token extends Gems_Registry_TargetAbstract
      * Set the reception code for this token and make sure the necessary
      * cascade to the source takes place.
      *
-     * @param string $code The new (non-success) reception code or a Gems_Util_ReceptionCode object
+     * @param string $code The new (non-success) reception code or a Gems_Tracker_ReceptionCode object
      * @param string $comment Comment False values leave value unchanged
      * @param int $userId The current user
      * @return int 1 if the token has changed, 0 otherwise
      */
     public function setReceptionCode($code, $comment, $userId)
     {
-        // Make sure it is a Gems_Util_ReceptionCode object
-        if (! $code instanceof Gems_Util_ReceptionCode) {
+        // Make sure it is a Gems_Tracker_ReceptionCode object
+        if (! $code instanceof Gems_Tracker_ReceptionCode) {
             $code = $this->util->getReceptionCode($code);
         }
 

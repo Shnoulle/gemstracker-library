@@ -239,17 +239,15 @@ class Gems_Util extends Gems_Loader_TargetLoaderAbstract
      * Returns a single reception code object.
      *
      * @param string $code
-     * @return Gems_Util_ReceptionCode
+     * @deprecated since 1.6
+     * @return Gems_Tracker_ReceptionCode
      */
     public function getReceptionCode($code)
     {
-        static $codes = array();
-
-        if (! isset($codes[$code])) {
-            $codes[$code] = $this->_loadClass('receptionCode', true, array($code));
-        }
-
-        return $codes[$code];
+        MUtil_Echo::track('Using util->getReceptionCode please update to tracker->getReceptionCode');
+        
+        // Forward to the right place
+        return GemsEscort::getInstance()->getLoader()->getTracker()->getReceptionCode($code);        
     }
 
     /**

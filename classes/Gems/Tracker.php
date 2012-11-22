@@ -339,6 +339,23 @@ class Gems_Tracker extends Gems_Loader_TargetLoaderAbstract implements Gems_Trac
     }
     
     /**
+     * Returns a single reception code object.
+     *
+     * @param string $code
+     * @return Gems_Tracker_ReceptionCode
+     */
+    public function getReceptionCode($code)
+    {
+        static $codes = array();
+
+        if (! isset($codes[$code])) {
+            $codes[$code] = $this->_loadClass('receptionCode', true, array($code));
+        }
+
+        return $codes[$code];
+    }
+    
+    /**
      *
      * @param mixed $respTrackData Track id or array containing trackdata
      * @return Gems_Tracker_RespondentTrack

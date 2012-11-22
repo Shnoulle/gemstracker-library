@@ -43,7 +43,7 @@
  * @license    New BSD License
  * @since      Class available since version 1.5
  */
-class Gems_Util_ReceptionCode extends Gems_Registry_CachedArrayTargetAbstract
+class Gems_Tracker_ReceptionCode extends Gems_Registry_CachedArrayTargetAbstract
 {
     /**
      * Variable to add tags to the cache for cleanup.
