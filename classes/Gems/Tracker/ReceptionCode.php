@@ -57,6 +57,12 @@ class Gems_Tracker_ReceptionCode extends Gems_Registry_CachedArrayTargetAbstract
      * @var Zend_Db_Adapter_Abstract
      */
     protected $db;
+    
+    /**
+     *
+     * @var Gems_Loader
+     */
+    protected $loader;
 
     /**
      * Compatibility mode, for use with logical operators returns this->getCode()
@@ -95,6 +101,31 @@ class Gems_Tracker_ReceptionCode extends Gems_Registry_CachedArrayTargetAbstract
     public function getDescription()
     {
         return $this->_get('grc_description');
+    }
+    
+    /**
+     * 
+     * @return Gems_Event_ReceptionCodeEventInterface
+     */
+    public function getEvent()
+    {
+        return $this->loader->getEvents()->loadReceptionCodeEvent($this->_get('grc_event'));
+    }
+    
+    /**
+     * Handle the set receptioncode event
+     * 
+     * This code is executed by the object where the reception code is set. Further
+     * cascading to other objects should be handled by the event.
+     * 
+     * @param type $object                                  The object that initially gets the receptioncode
+     * @param Gems_Tracker_ReceptionCode $receptionCode
+     * @param string $comment
+     * @param int $userId
+     * @return int 0 for no change 1 for any number of changes
+     */
+    public function handleEvent($object, $receptionCode, $comment, $userId) {
+        return $this->getEvent()->setReceptionCode($object, $receptionCode, $comment, $userId);
     }
 
     /**
