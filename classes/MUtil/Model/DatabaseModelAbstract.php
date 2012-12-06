@@ -332,7 +332,7 @@ abstract class MUtil_Model_DatabaseModelAbstract extends MUtil_Model_ModelAbstra
                     $finfo['type'] = MUtil_Model::TYPE_DATE;
                     $this->set($name, 'storageFormat', 'yyyy-MM-dd');
                     $this->setOnSave($name, array($this, 'formatSaveDate'));
-                    $this->setOnLoad($name, array($this, 'formatLoadData'));
+                    $this->setOnLoad($name, array($this, 'formatLoadDate'));
                     break;
 
                 case 'datetime':
@@ -340,14 +340,14 @@ abstract class MUtil_Model_DatabaseModelAbstract extends MUtil_Model_ModelAbstra
                     $finfo['type'] = MUtil_Model::TYPE_DATETIME;
                     $this->set($name, 'storageFormat', 'yyyy-MM-dd HH:mm:ss');
                     $this->setOnSave($name, array($this, 'formatSaveDate'));
-                    $this->setOnLoad($name, array($this, 'formatLoadData'));
+                    $this->setOnLoad($name, array($this, 'formatLoadDate'));
                     break;
 
                 case 'time':
                     $finfo['type'] = MUtil_Model::TYPE_TIME;
                     $this->set($name, 'storageFormat', 'HH:mm:ss');
                     $this->setOnSave($name, array($this, 'formatSaveDate'));
-                    $this->setOnLoad($name, array($this, 'formatLoadData'));
+                    $this->setOnLoad($name, array($this, 'formatLoadDate'));
                     break;
 
                 case 'int':
