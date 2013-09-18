@@ -44,7 +44,7 @@
  * @license    New BSD License
  * @since      Class available since MUtil version 1.3
  */
-class MUtil_Model_Iterator_ArrayModelFilterIterator extends FilterIterator
+class MUtil_Model_Iterator_ArrayModelFilterIterator implements OuterIterator, Serializable
 {
     /**
      * The filter to apply
@@ -52,6 +52,12 @@ class MUtil_Model_Iterator_ArrayModelFilterIterator extends FilterIterator
      * @var array
      */
     protected $_filter;
+
+    /**
+     *
+     * @var Iterator
+     */
+    protected $_iterator;
 
     /**
      *
@@ -65,13 +71,18 @@ class MUtil_Model_Iterator_ArrayModelFilterIterator extends FilterIterator
      * @param MUtil_Model_ArrayModelAbstract $model
      * @param array $filter
      */
-    public function __construct(Iterator $iterator, MUtil_Model_ArrayModelAbstract $model, array $filter)
+    public function __construct(Iterator $iterator, $model, array $filter)
     {
-        parent::__construct($iterator);
-
-        $this->_model = $model;
-        $this->_filter = $filter;
+        $this->_iterator = $iterator;
+        $this->_model    = $model;
+        $this->_filter   = $filter;
     }
+
+    /*
+    public function __wakeup()
+    {
+        echo get_class($this->_iterator), get_class($this->_model) . '<br/>';;
+    } // */
 
     /**
      *
@@ -79,6 +90,109 @@ class MUtil_Model_Iterator_ArrayModelFilterIterator extends FilterIterator
      */
     public function accept()
     {
-        return $this->_model->applyFiltersToRow($this->current(), $this->_filter);
+        // return $this->_model->applyFiltersToRow($this->current(), $this->_filter);
+        return call_user_func($this->_model, $this->current(), $this->_filter);
+    }
+
+    /**
+     * Return the current element
+     *
+     * @return array
+     */
+    public function current()
+    {
+        return $this->_iterator->current();
+    }
+
+    /**
+     * Get the inner iterator.
+     *
+     * @return Iterator
+     */
+    public function getInnerIterator()
+    {
+        return $this->_iterator;
+    }
+
+    /**
+     * Return the key of the current element
+     *
+     * @return int
+     */
+    public function key()
+    {
+        return $this->_iterator->key();
+    }
+
+    /**
+     * Move forward to next element
+     */
+    public function next()
+    {
+        do {
+            $this->_iterator->next();
+        } while (! $this->accept());
+    }
+
+    /**
+     *  Rewind the Iterator to the first element
+     */
+    public function rewind()
+    {
+        $this->_iterator->rewind();
+
+        while (! $this->accept()) {
+            $this->_iterator->next();
+        }
+    }
+
+    /**
+     * Return the string representation of the object.
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        $serializer = Zend_Serializer::getDefaultAdapter();
+
+        $data = array(
+            'filter' => $this->_filter,
+            'model'  => $this->_model,
+            'iter'   => $serializer->serialize($this->_iterator),
+        );
+
+        return Zend_Serializer::getDefaultAdapter()->serialize($data);
+    }
+
+    /**
+     * Called during unserialization of the object.
+     *
+     * @param string $serialized
+     */
+    public function unserialize($serialized)
+    {
+        $serializer = Zend_Serializer::getDefaultAdapter();
+
+        echo $serialized . '<br/><br/><br/>';
+        // MUtil_Echo::track('check');
+
+        $data = $serializer->unserialize($serialized);
+
+        // echo $data['iter'] . '<br/>';
+        $this->_filter   = $data['filter'];
+        $this->_model    = $data['model'];
+        $this->_iterator = $serializer->unserialize($data['iter']);
+        // echo get_class($this->_iterator) . ' ' . $this->_iterator->_mapFunction[0] . '<br/>';
+        // $this->_model = $this->_iterator->_mapFunction[0];
+    }
+
+    /**
+     * True if not end of inner iterator
+     *
+     * @return boolean
+     */
+    public function valid()
+    {
+        return $this->_iterator->valid();
     }
 }

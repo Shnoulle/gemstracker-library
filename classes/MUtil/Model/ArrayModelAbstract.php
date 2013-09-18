@@ -137,7 +137,16 @@ abstract class MUtil_Model_ArrayModelAbstract extends MUtil_Model_ModelAbstract
             $data = $data->getIterator();
         }
         if ($data instanceof Iterator) {
-            return new MUtil_Model_Iterator_ArrayModelFilterIterator($data, $this, $filters);
+            if (true || $filters) {
+                $func = function ($row) use ($filters) {
+                    return call_user_func(array(__CLASS__, 'applyFiltersToRow'), $row, $filters);
+                };
+
+                // return new MUtil_Model_Iterator_ArrayModelFilterIterator($data, array(__CLASS__, 'applyFiltersToRow'), $filters);
+                return new CallbackFilterIterator($data, $func);
+            } else {
+                return $data;
+            }
         }
 
         foreach ($data as $key => $row) {
@@ -250,11 +259,58 @@ abstract class MUtil_Model_ArrayModelAbstract extends MUtil_Model_ModelAbstract
      *
      * @param array $row A row of data
      * @param array $filters An array of filter statements
+     * @param boolean $logicalAnd When true this is an AND filter, otherwise OR (switches at each array nesting level)
      * @return boolean
      */
-    public function applyFiltersToRow(array $row, array $filters)
+    public static function applyFiltersToRow(array $row, array $filters, $logicalAnd = true)
     {
-        return $this->_applyFiltersToRow($row, $filters, true);
+        foreach ($filters as $name => $filter) {
+            if (is_callable($filter)) {
+                if (is_numeric($name)) {
+                    $value = $row;
+                } else {
+                    $value = isset($row[$name]) ? $row[$name] : null;
+                }
+                $result = call_user_func($filter, $value);
+
+            } elseif (is_array($filter)) {
+                if (is_numeric($name)) {
+                    $subFilter = $filter;
+                } else {
+                    $subFilter = array();
+                    foreach ($filter as $key => $val) {
+                        if (is_numeric($key)) {
+                            $subFilter[$name] = $val;
+                        } else {
+                            $subFilter[$key] = $val;
+                        }
+                    }
+                }
+                $result = self::applyFiltersToRow($row, $subFilter, ! $logicalAnd);
+
+            } else {
+                if (is_numeric($name)) {
+                    // Allow literal value interpretation
+                    $result = (boolean) $value;
+                } else {
+                    $value = isset($row[$name]) ? $row[$name] : null;
+                    $result = ($value === $filter);
+                }
+                // MUtil_Echo::r($value . '===' . $filter . '=' . $result);
+            }
+
+            if ($logicalAnd xor $result) {
+                return $result;
+            }
+        }
+
+        // If $logicalAnd is true:
+        //   => all filters must have triggered true to arrive here
+        //   => the result is true,
+        // If $logicalAnd is false:
+        //   => all filters must have triggered false to arrive here
+        //   => the result is false.
+        return $logicalAnd;
     }
 
     /**
@@ -371,7 +427,7 @@ abstract class MUtil_Model_ArrayModelAbstract extends MUtil_Model_ModelAbstract
         $data = $this->_loadAllTraversable();
 
         if ($data && $filter) {
-            $data = $this->_filterData($data, $filter);
+            $data = $this->_filterData($data, $this->_checkFilterUsed($filter));
         }
 
         if ($this->_checkSortUsed($sort)) {

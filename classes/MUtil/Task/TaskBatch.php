@@ -85,8 +85,54 @@ class MUtil_Task_TaskBatch extends MUtil_Batch_BatchAbstract
      */
     public function addTask($task, $param1 = null)
     {
+        $taskClass = $this->getTaskLoader()->load($task);
+
+        if (! $taskClass instanceof MUtil_Task_TaskInterface) {
+            throw new MUtil_Batch_BatchException(sprintf('Cannot load task class %s.', $task));
+        }
+
+        // Repeatable task cannot
+        if ($this->isPull() && ($taskClass instanceof MUtil_Task_RepeatableTaskInterface)) {
+            // Cannot use push with repeatable tasks
+            $this->setMethodPush();
+        }
+
         $params = array_slice(func_get_args(), 1);
         $this->addStep('runTask', $task, $params);
+
+        return $this;
+    }
+
+    /**
+     * Helper function for adding an iterator task to the stack, optionally adding as much parameters as needed.
+     *
+     * @param string $task Name of Task class, the execute method is called repeatedly with the output of the each
+     *                     iteration used as the input for the execute method of this task.
+     * @param callable $callForIterator A method to call for getting the iterator. You cannot pass the iterator itself.
+     * @param mixed $param1 Optional scalar or array with scalars, as many parameters as needed call the iterator
+     * @param mixed $param2 ...
+     * @return \MUtil_Task_TaskBatch (continuation pattern)
+     */
+    public function addTaskIterator($task, $callForIterator, $param1 = null)
+    {
+        $taskClass = $this->getTaskLoader()->load($task);
+
+        if (! $taskClass instanceof MUtil_Task_TaskInterface) {
+            throw new MUtil_Batch_BatchException(sprintf('Cannot load task class %s.', $task));
+        }
+
+        if (!is_callable($callForIterator)) {
+            throw new MUtil_Batch_BatchException(sprintf(
+                    'Second task iterator argument for task class %s is not callable.',
+                    $task
+                    ));
+        }
+
+        // Add the iterator taks.
+        $args = func_het_args();
+        array_unshift($args, 'IteratorTask');
+
+        call_user_func_array(array($this, 'addTask'), $args);
 
         return $this;
     }
@@ -144,7 +190,25 @@ class MUtil_Task_TaskBatch extends MUtil_Batch_BatchAbstract
 
         if ($taskObject instanceof MUtil_Task_TaskInterface) {
             $taskObject->setBatch($this);
+
             call_user_func_array(array($taskObject, 'execute'), $params);
+
+            if ($taskObject instanceof MUtil_Task_RepeatableTaskInterface) {
+                // Loop here. No exit is reason repeatable task cannot
+                // use the PULL method.
+                while (! $taskObject->isFinished()) {
+
+                    $this->_extraRun();
+
+                    if ($this->_checkReport()) {
+                        // Communicate progress
+                        $this->_updateBar();
+                    }
+                    
+                    call_user_func_array(array($taskObject, 'execute'), $params);
+                }
+            } else {
+            }
         } else {
             throw new Gems_Exception(sprintf('ERROR: Task by name %s not found', $task));
         }
