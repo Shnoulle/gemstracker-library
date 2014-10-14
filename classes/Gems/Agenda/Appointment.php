@@ -326,12 +326,14 @@ class Gems_Agenda_Appointment extends Gems_Registry_TargetAbstract
     public function updateTracks()
     {
         $select = $this->db->select();
-        $select->from('gems__respondent2track2appointment', 'gr2t2a_id_respondent_track')
+        $select->from('gems__respondent2track2appointment',
+                array('gr2t2a_id_respondent_track', 'gr2t2a_id_respondent_track')
+                )
                 ->where('gr2t2a_id_appointment = ?', $this->_appointmentId)
                 ->distinct();
 
         $tokenChanges = 0;
-        $respTracks   = $this->db->fetchCol($select);
+        $respTracks   = $this->db->fetchPairs($select);
 
         // MUtil_Echo::track($respTracks);
         if ($respTracks) {
@@ -342,8 +344,13 @@ class Gems_Agenda_Appointment extends Gems_Registry_TargetAbstract
                 $respTrack = $tracker->getRespondentTrack($respTrackId);
                 $tokenChanges += $respTrack->recalculateFields();
             }
+        } else {
+            $respTracks = array();
         }
         // MUtil_Echo::track($tokenChanges);
+
+        $tokenChanges += $this->agenda->applyRespondentTrackMatches($this);
+        $tokenChanges += $this->agenda->applyTrackCreationMatches($this);
 
         return $tokenChanges;
     }

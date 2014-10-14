@@ -154,6 +154,24 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
     }
 
     /**
+     *
+     * @param Gems_Agenda_Appointment $appointment
+     */
+    public function applyRespondentTrackMatches(Gems_Agenda_Appointment $appointment)
+    {
+
+    }
+
+    /**
+     *
+     * @param Gems_Agenda_Appointment $appointment
+     */
+    public function applyTrackCreationMatches(Gems_Agenda_Appointment $appointment)
+    {
+
+    }
+
+    /**
      * Get all active respondents for this user
      *
      * @param int $respondentId When null $patientNr is required
@@ -564,6 +582,20 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
         $stati = $this->getStatusCodesActive();
 
         return isset($stati[$code]);
+    }
+
+    protected function loadFilters()
+    {
+        $cacheId = __CLASS__ . '.' . __FUNCTION__;
+
+        $output = $this->cache->load($cacheId);
+        if ($output) {
+            return $output;
+        }
+
+        
+
+        $this->cache->save($output, $cacheId, array('appointment_filters'));
     }
 
     /**
