@@ -248,7 +248,7 @@ class Gems_Model_AppointmentModel extends Gems_Model_JoinModel
 
         if ($setMulti) {
             $this->setIfExists('gap_id_activity',     'multiOptions', $empty + $agenda->getActivities());
-            $this->setIfExists('gap_id_procedure',    'multiOptions', $empty + $agenda->getProcedures());
+$this->setIfExists('gap_id_procedure',    'multiOptions', $empty + $agenda->getProcedures());
             $this->setIfExists('gap_id_location',     'multiOptions', $empty + $agenda->getLocations());
         }
 

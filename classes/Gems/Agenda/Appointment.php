@@ -340,8 +340,7 @@ class Gems_Agenda_Appointment extends Gems_Registry_TargetAbstract
 
             foreach ($respTracks as $respTrackId) {
                 $respTrack = $tracker->getRespondentTrack($respTrackId);
-                $respTrack->setFieldData($respTrack->getFieldData());
-                $tokenChanges += $respTrack->checkTrackTokens($userId);
+                $tokenChanges += $respTrack->recalculateFields();
             }
         }
         // MUtil_Echo::track($tokenChanges);

@@ -320,7 +320,7 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
             $this->getTokens(true);
 
             $this->checkTrackTokens($userId, $this->_tokens[$tokenId]);
-            // Update the track counter            
+            // Update the track counter
             //$this->_checkTrackCount($userId);
         }
 
@@ -356,7 +356,7 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
             $this->getTokens(true);
 
             $this->checkTrackTokens($userId, $token);
-            // Update the track counter            
+            // Update the track counter
             //$this->_checkTrackCount($userId);
         }
 
@@ -985,6 +985,17 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
         }
 
         return $this->_respTrackData['grc_success'];
+    }
+
+    /**
+     * Refresh the fields (to reflect any changed appointments)
+     *
+     * @return int The number of tokens changed as a result of this update
+     */
+    public function recalculateFields()
+    {
+        $respTrack->setFieldData($respTrack->getFieldData());
+        return $respTrack->checkTrackTokens($userId);
     }
 
     /**
