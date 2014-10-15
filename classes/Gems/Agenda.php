@@ -71,6 +71,10 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
      */
     protected $db;
 
+    protected $filterLoaders = array(
+        array('Filter_SqlLikeAppointmentFilterLoader' => 'loadFilters'),
+    );
+
     /**
      *
      * @var Gems_Loader
@@ -593,7 +597,7 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
             return $output;
         }
 
-        
+
 
         $this->cache->save($output, $cacheId, array('appointment_filters'));
     }
