@@ -18,7 +18,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL MAGNAFACTA BE LIABLE FOR ANY
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -28,26 +28,21 @@
  *
  *
  * @package    Gems
- * @subpackage Agenda
+ * @subpackage Default
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @version    $Id: SqlLikeAppointmentFilterLoader.php $
+ * @version    $Id: AgendaFilter.php $
  */
 
 /**
  *
  *
  * @package    Gems
- * @subpackage Agenda
+ * @subpackage Default
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @since      Class available since version 1.6.5 15-okt-2014 12:43:17
+ * @since      Class available since version 1.6.5 15-okt-2014 23:37:32
  */
-class Gems_Agenda_Filter_SqlLikeAppointmentFilterLoader extends MUtil_Translate_TranslateableAbstract
-{
-    public function loadFilters()
-    {
-
-    }
-}
+class AgendaFilterController extends Gems_Default_AgendaFilterAction
+{ }

@@ -32,7 +32,7 @@
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @version    $Id: AppointmentFilterModelAbstract.php $
+ * @version    $Id: AppointmentFilterModel.php $
  */
 
 /**
@@ -44,8 +44,31 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 15-okt-2014 13:07:11
  */
-abstract class Gems_Agenda_AppointmentFilterModelAbstract extends Gems_Model_JoinModel
+class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
 {
+    /**
+     *
+     * @var Gems_Agenda
+     */
+    protected $agenda;
+
+    /**
+     * The filter dependency class names, the parts after *_Agenda_Filter_
+     *
+     * @var array (dependencyClassName)
+     */
+    protected $filterDependencies = array(
+        'SqlLikeModelDependency',
+        'SubjectModelDependency',
+    );
+
+    /**
+     * The filter class names, loaded by loodFilterDependencies()
+     *
+     * @var array filterClassName => Label
+     */
+    protected $filterOptions;
+
     /**
      *
      * @var Gems_Util
@@ -56,7 +79,7 @@ abstract class Gems_Agenda_AppointmentFilterModelAbstract extends Gems_Model_Joi
      *
      * @param string $name
      */
-    public function __construct($name)
+    public function __construct($name = 'app-filter')
     {
         parent::__construct($name, 'gems__appointment_filters', 'gaf');
     }
@@ -68,6 +91,12 @@ abstract class Gems_Agenda_AppointmentFilterModelAbstract extends Gems_Model_Joi
      */
     public function applyBrowseSettings()
     {
+        $this->loadFilterDependencies(false);
+
+        $this->set('gaf_class', 'label', $this->_('Filter type'),
+                'description', $this->_('Determines what is filtered how.'),
+                'multiOptions', $this->filterOptions
+                );
         $this->addColumn('COALESCE(gaf_manual_name, gaf_calc_name)', 'gaf_name');
         $this->set('gaf_name', 'label', $this->_('Name'));
         $this->set('gaf_id_order', 'label', $this->_('Order'),
@@ -76,7 +105,7 @@ abstract class Gems_Agenda_AppointmentFilterModelAbstract extends Gems_Model_Joi
         $this->set('gaf_active', 'label', $this->_('Active'),
                 'multiOptions', $this->util->getTranslated()->getYesNo()
                 );
-        
+
         return $this;
     }
 
@@ -87,6 +116,12 @@ abstract class Gems_Agenda_AppointmentFilterModelAbstract extends Gems_Model_Joi
      */
     public function applyDetailSettings()
     {
+        $this->loadFilterDependencies(true);
+
+        $this->set('gaf_class', 'label', $this->_('Filter type'),
+                'description', $this->_('Determines what is filtered how.'),
+                'multiOptions', $this->filterOptions
+                );
         $this->set('gaf_manual_name', 'label', $this->_('Manual name'),
                 'description', $this->_('A name for this filter. The calculated name is used otherwise.'));
         $this->set('gaf_calc_name', 'label', $this->_('Calculated name'));
@@ -109,24 +144,36 @@ abstract class Gems_Agenda_AppointmentFilterModelAbstract extends Gems_Model_Joi
     {
         $this->applyDetailSettings();
 
+        reset($this->filterOptions);
+        $default = key($this->filterOptions);
+        $this->set('gaf_class', 'default', $default, 'onchange', 'this.form.submit();');
         $this->set('gaf_calc_name', 'elementClass', 'Exhibitor');
         $this->setOnSave('gaf_calc_name', array($this, 'calcultateName'));
-        $this->set('gaf_active', 'elementClass', 'Checkbox');
+        $this->set('gaf_active',    'elementClass', 'Checkbox');
 
         return $this;
     }
 
     /**
-     * A ModelAbstract->setOnSave() function that returns the input
-     * date as a valid date.
+     * Load filter dependencies into model and populate the filterOptions
      *
-     * @see MUtil_Model_ModelAbstract
-     *
-     * @param mixed $value The value being saved
-     * @param boolean $isNew True when a new item is being saved
-     * @param string $name The name of the current field
-     * @param array $context Optional, the other values being saved
-     * @return Zend_Date
+     * @return array filterClassName => Label
      */
-    abstract public function calcultateName($value, $isNew = false, $name = null, array $context = array());
+    protected function loadFilterDependencies($activateDependencies = true)
+    {
+        if (! $this->filterOptions) {
+            // $this->filterOptions = array();
+            foreach ($this->filterDependencies as $dependencyClass) {
+                $dependency = $this->agenda->newFilterObject($dependencyClass);
+                if ($dependency instanceof Gems_Agenda_FilterModelDependencyAbstract) {
+                    $this->filterOptions[$dependency->getFilterClass()] = $dependency->getFilterName();
+
+                    if ($activateDependencies) {
+                        $this->addDependency($dependency);
+                    }
+                }
+            }
+        }
+        return $this->filterOptions;
+    }
 }

@@ -71,10 +71,6 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
      */
     protected $db;
 
-    protected $filterLoaders = array(
-        array('Filter_SqlLikeAppointmentFilterLoader' => 'loadFilters'),
-    );
-
     /**
      *
      * @var Gems_Loader
@@ -857,6 +853,26 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
         $this->cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_ANY_TAG, array('procedure', 'procedures'));
 
         return $result['gapr_id_procedure'];
+    }
+
+    /**
+     * Creates a new filter class object
+     *
+     * @param string $className The part after *_Agenda_Filter_
+     * @return object
+     */
+    public function newFilterObject($className)
+    {
+        return $this->_loadClass("Filter_$className", true);
+    }
+
+    /**
+     *
+     * @return Gems_Agenda_AppointmentFilterModel
+     */
+    public function newFilterModel()
+    {
+        return $this->_loadClass('AppointmentFilterModel', true);
     }
 
     /**

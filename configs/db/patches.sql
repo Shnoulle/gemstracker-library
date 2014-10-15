@@ -830,3 +830,10 @@ ALTER TABLE gems__radius_config ADD
 -- PATCH: Add templates privilege to superadmin role (super)
 UPDATE gems__roles SET grl_privileges = CONCAT(grl_privileges,',pr.templates')
     WHERE grl_privileges NOT LIKE '%pr.templates%' AND grl_name = 'super';
+
+-- PATCH: New aganda automation system
+UPDATE gems__roles
+    SET grl_privileges =
+        CONCAT(grl_privileges,',pr.agenda-filters,pr.agenda-filters.create,pr.agenda-filters.delete,pr.agenda-filters.edit')
+    WHERE grl_name = 'super' AND grl_privileges NOT LIKE '%pr.agenda-filters%';
+
