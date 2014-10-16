@@ -32,35 +32,37 @@
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @version    $Id: FilterModelDependencyAbstract.php $
+ * @version    $Id: AndModelDependency.php $
  */
 
 /**
- * Default dependency for any AppointFilter
+ *
  *
  * @package    Gems
  * @subpackage Agenda
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @since      Class available since version 1.6.5 15-okt-2014 18:10:36
+ * @since      Class available since version 1.6.5 16-okt-2014 16:56:22
  */
-abstract class Gems_Agenda_FilterModelDependencyAbstract extends MUtil_Model_Dependency_ValueSwitchDependency
+class Gems_Agenda_Filter_AndModelDependency extends Gems_Agenda_FilterModelDependencyAbstract
 {
     /**
-     * Array of name => name of items dependency depends on.
      *
-     * Can be overriden in sub class
-     *
-     * @var array Of name => name
+     * @var array filter_id => label
      */
-    protected $_dependentOn = array('gaf_class');
+    protected $_filters;
 
     /**
-     * The number of gaf_filter_textN fields/
      *
-     * @var int
+     * @var Gems_Agenda
      */
-    protected $_fieldCount = 4;
+    protected $agenda;
+
+    /**
+     *
+     * @var Gems_Util
+     */
+    protected $util;
 
     /**
      * Called after the check that all required registry values
@@ -70,29 +72,9 @@ abstract class Gems_Agenda_FilterModelDependencyAbstract extends MUtil_Model_Dep
      */
     public function afterRegistry()
     {
+        $this->_filters = $this->util->getTranslated()->getEmptyDropdownArray() + $this->agenda->getFilterList();
+
         parent::afterRegistry();
-
-        $setOnSave = MUtil_Model_ModelAbstract::SAVE_TRANSFORMER;
-        $switches  = $this->getTextSettings();
-
-        // Make sure the calculated name is saved
-        if (! isset($switches['gaf_calc_name'], $switches['gaf_calc_name'][$setOnSave])) {
-            $switches['gaf_calc_name'][$setOnSave] = array($this, 'calcultateName');
-        }
-
-        // Make sure the class name is always saved
-        $className = $this->getFilterClass();
-        $switches['gaf_class'][$setOnSave] = $className;
-
-        // Check all the fields
-        for ($i = 1; $i <= $this->_fieldCount; $i++) {
-            $field = 'gaf_filter_text' . $i;
-            if (! isset($switches[$field])) {
-                $switches[$field] = array('label' => null, 'elementClass' => 'Hidden');
-            }
-        }
-
-        $this->addSwitches(array($className => $switches));
     }
 
     /**
@@ -107,21 +89,43 @@ abstract class Gems_Agenda_FilterModelDependencyAbstract extends MUtil_Model_Dep
      * @param array $context Optional, the other values being saved
      * @return Zend_Date
      */
-    abstract public function calcultateName($value, $isNew = false, $name = null, array $context = array());
+    public function calcultateName($value, $isNew = false, $name = null, array $context = array())
+    {
+        $output = array();
+        // Check all the fields
+        for ($i = 1; $i <= $this->_fieldCount; $i++) {
+            $field = 'gaf_filter_text' . $i;
+            if (isset($context[$field], $this->_filters[$context[$field]])) {
+                $output[] = $this->_filters[$context[$field]];
+            }
+        }
+
+        if ($output) {
+            return ucfirst(implode($this->_(' and '), $output));
+        } else {
+            return $this->_('empty filter');
+        }
+    }
 
     /**
      * Get the class name for the filters, the part after *_Agenda_Filter_
      *
      * @return string
      */
-    abstract public function getFilterClass();
+    public function getFilterClass()
+    {
+        return 'AndAppointmentFilter';
+    }
 
     /**
      * Get the name for this filter class
      *
      * @return string
      */
-    abstract public function getFilterName();
+    public function getFilterName()
+    {
+        return $this->_('And filter combination');
+    }
 
     /**
      * Get the settings for the gaf_filter_textN fields
@@ -130,5 +134,31 @@ abstract class Gems_Agenda_FilterModelDependencyAbstract extends MUtil_Model_Dep
      *
      * @return array gaf_filter_textN => array(modelFieldName => fieldValue)
      */
-    abstract public function getTextSettings();
+    public function getTextSettings()
+    {
+        return array(
+            'gaf_filter_text1' => array(
+                'label'        => $this->_('Filter 1'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                'required'     => true,
+                ),
+            'gaf_filter_text2' => array(
+                'label'        => $this->_('Filter 2'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                'required'     => true,
+                ),
+            'gaf_filter_text3' => array(
+                'label'        => $this->_('Filter 3'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                ),
+            'gaf_filter_text4' => array(
+                'label'        => $this->_('Filter 4'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                ),
+            );
+    }
 }

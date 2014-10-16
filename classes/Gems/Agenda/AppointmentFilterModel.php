@@ -58,6 +58,7 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
      * @var array (dependencyClassName)
      */
     protected $filterDependencies = array(
+        'AndModelDependency',
         'SqlLikeModelDependency',
         'SubjectModelDependency',
     );
@@ -174,6 +175,7 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
                 }
             }
         }
+        
         return $this->filterOptions;
     }
 }

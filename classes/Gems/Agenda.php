@@ -328,6 +328,28 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
     }
 
     /**
+     * Load the list of assignable filters
+     *
+     * @return array filter_id => label
+     */
+    public function getFilterList()
+    {
+        $cacheId = __CLASS__ . '_' . __FUNCTION__;
+
+        $output = $this->cache->load($cacheId);
+        if ($output) {
+            return $output;
+        }
+
+        $output = $this->db->fetchPairs("SELECT gaf_id, COALESCE(gaf_manual_name, gaf_calc_name) "
+                . "FROM gems__appointment_filters WHERE gaf_active = 1 ORDER BY gaf_id_order");
+
+        $this->cache->save($output, $cacheId, array('appointment_filters'));
+
+        return $output;
+    }
+
+    /**
      *
      * @param int $organizationId Optional
      * @return array activity_id => name
@@ -586,7 +608,7 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
 
     protected function loadFilters()
     {
-        $cacheId = __CLASS__ . '.' . __FUNCTION__;
+        $cacheId = __CLASS__ . '_' . __FUNCTION__;
 
         $output = $this->cache->load($cacheId);
         if ($output) {

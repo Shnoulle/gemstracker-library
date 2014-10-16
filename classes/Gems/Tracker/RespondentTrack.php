@@ -990,11 +990,12 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
     /**
      * Refresh the fields (to reflect any changed appointments)
      *
+     * @param int $userId The current user
      * @return int The number of tokens changed as a result of this update
      */
-    public function recalculateFields()
+    public function recalculateFields($userId)
     {
-        $respTrack->setFieldData($respTrack->getFieldData());
+        $respTrack->setFieldData($respTrack->getFieldData(), $userId);
         return $respTrack->checkTrackTokens($userId);
     }
 
@@ -1043,9 +1044,10 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
      * Return the complete set of fielddata
      *
      * @param array $data
+     * @param int $userId The current user, when passed the track_info is recalculated and saved
      * @return array
      */
-    public function setFieldData($data)
+    public function setFieldData($data, $userId = null)
     {
         $engine    = $this->getTrackEngine();
         $fieldMap  = $engine->getFields();
@@ -1065,6 +1067,14 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
         $changeCount = $engine->setFieldsData($this->_respTrackId, $fieldData);
         if ($changeCount>0) {
             $this->_ensureFieldData(true);  // force reload
+
+            if ($userId) {
+                $info = $this->getTrackEngine()->calculateFieldsInfo($this->_respTrackId, $this->_fieldData);
+
+                if ($info != $this->_respTrackData['gr2t_track_info']) {
+                    $this->_updateTrack(array('gr2t_track_info' => $info), $userId);
+                }
+            }
         }
 
         return $this->_fieldData;
