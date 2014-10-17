@@ -32,7 +32,7 @@
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @version    $Id: AppointmentFilterAbstract.php $
+ * @version    $Id: AppointmentSubFilterAbstract.php $
  */
 
 namespace Gems\Agenda;
@@ -44,18 +44,21 @@ namespace Gems\Agenda;
  * @subpackage Agenda
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @since      Class available since version 1.6.5 13-okt-2014 20:13:01
+ * @since      Class available since version 1.6.5 17-okt-2014 14:46:23
  */
-// abstract class Gems_Agenda_AppointmentFilterAbstract implements Gems_Agenda_AppointmentFilterInterface
-abstract class AppointmentFilterAbstract extends \MUtil_Translate_TranslateableAbstract
-    implements AppointmentFilterInterface, \Serializable
+abstract class AppointmentSubFilterAbstract extends AppointmentFilterAbstract
 {
     /**
-     * Initial data settings
      *
-     * @var array
+     * @var array of AppointmentFilterInterface instances
      */
-    protected $_data;
+    protected $_subFilters = array();
+
+    /**
+     *
+     * @var \Gems_Agenda
+     */
+    protected $agenda;
 
     /**
      * Override this function when you need to perform any actions when the data is loaded.
@@ -69,40 +72,42 @@ abstract class AppointmentFilterAbstract extends \MUtil_Translate_TranslateableA
      * After this the object should be ready for serialization
      */
     protected function afterLoad()
-    { }
-
-    /**
-     * Called after the check that all required registry values
-     * have been set correctly has run.
-     *
-     * @return void
-     */
-    public function afterRegistry()
     {
-        parent::afterRegistry();
+        if ($this->_data &&
+                $this->agenda instanceof \Gems_Agenda &&
+                ! $this->_subFilters) {
 
-        $this->afterLoad();
-    }
+            // Flexible determination of filters to load. Save for future expansion of numbe rof fields
+            $i         = 1;
+            $field     = 'gaf_filter_text' . $i;
+            $filterIds = array();
+            while (array_key_exists($field, $this->_data)) {
+                if ($this->_data[$field]) {
+                    $filterIds[] = intval($this->_data[$field]);
+                }
+                $i++;
+                $field = 'gaf_filter_text' . $i;
+            }
 
-    /**
-     * Load the object from a data array
-     *
-     * @param array $data
-     */
-    public function exchangeArray(array $data)
-    {
-        $this->_data = $data;
-        $this->afterLoad();
-    }
+            if ($filterIds) {
+                $filterObjects = $this->agenda->getFilters("SELECT *
+                    FROM gems__appointment_filters LEFT JOIN gems__track_appointments ON gaf_id = gtap_filter_id
+                    WHERE gaf_id IN (" . implode(', ', $filterIds) . ")
+                    ORDER BY gaf_id_order");
 
-    /**
-     * The filter id
-     *
-     * @return int
-     */
-    public function getFilterId()
-    {
-        return $this->_data['gaf_id'];
+                // The order we get the filters may not be the same as the one in which they are specified
+                foreach ($filterIds as $id) {
+                    foreach ($filterObjects as $filterObject) {
+                        if ($filterObject instanceof AppointmentFilterInterface) {
+                            if ($filterObject->getFilterId() == $id) {
+                                $this->_subFilters[$id] = $filterObject;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -112,43 +117,4 @@ abstract class AppointmentFilterAbstract extends \MUtil_Translate_TranslateableA
      * @return boolean
      */
     // public function matchAppointment(Gems_Agenda_Appointment $appointment);
-
-    /**
-     * By default only object variables starting with '_' are serialized in order to
-     * avoid serializing any resource types loaded by
-     * MUtil_Translate_TranslateableAbstract
-     *
-     * @return string
-     */
-    public function serialize() {
-        $data = array();
-        foreach (get_object_vars($this) as $name => $value) {
-            if (! $this->filterRequestNames($name)) {
-                $data[$name] = $value;
-            }
-        }
-        return serialize($data);
-    }
-
-    /**
-     * When true processing stops when there is a match.
-     *
-     * @return boolean
-     */
-    public function stopOnMatch()
-    {
-        return (boolean) $this->_data['gaf_stop_on_match'];
-    }
-
-    /**
-     * Restore parameter values
-     *
-     * @param string $data
-     */
-    public function unserialize($data) {
-
-        foreach ((array) unserialize($data) as $name => $value) {
-            $this->$name = $value;
-        }
-    }
 }

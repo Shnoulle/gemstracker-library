@@ -32,7 +32,7 @@
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @version    $Id: SubjectModelDependency.php $
+ * @version    $Id: AndModelDependency.php $
  */
 
 namespace Gems\Agenda\Filter;
@@ -46,11 +46,42 @@ use Gems\Agenda\FilterModelDependencyAbstract;
  * @subpackage Agenda
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @since      Class available since version 1.6.5 15-okt-2014 18:52:40
+ * @since      Class available since version 1.6.5 16-okt-2014 16:56:22
  */
-// class Gems_Agenda_Filter_SubjectModelDependency extends Gems_Agenda_FilterModelDependencyAbstract
-class SubjectModelDependency extends FilterModelDependencyAbstract
+// class Gems_Agenda_Filter_AndModelDependency extends Gems_Agenda_FilterModelDependencyAbstract
+class OrModelDependency extends FilterModelDependencyAbstract
 {
+    /**
+     *
+     * @var array filter_id => label
+     */
+    protected $_filters;
+
+    /**
+     *
+     * @var \Gems_Agenda
+     */
+    protected $agenda;
+
+    /**
+     *
+     * @var \Gems_Util
+     */
+    protected $util;
+
+    /**
+     * Called after the check that all required registry values
+     * have been set correctly has run.
+     *
+     * @return void
+     */
+    public function afterRegistry()
+    {
+        $this->_filters = $this->util->getTranslated()->getEmptyDropdownArray() + $this->agenda->getFilterList();
+
+        parent::afterRegistry();
+    }
+
     /**
      * A ModelAbstract->setOnSave() function that returns the input
      * date as a valid date.
@@ -65,8 +96,17 @@ class SubjectModelDependency extends FilterModelDependencyAbstract
      */
     public function calcultateName($value, $isNew = false, $name = null, array $context = array())
     {
-        if (isset($context['gaf_filter_text1'])) {
-            return sprintf($this->_('Subject contains %s'), $context['gaf_filter_text1']);
+        $output = array();
+        // Check all the fields
+        for ($i = 1; $i <= $this->_fieldCount; $i++) {
+            $field = 'gaf_filter_text' . $i;
+            if (isset($context[$field], $this->_filters[$context[$field]])) {
+                $output[] = $this->_filters[$context[$field]];
+            }
+        }
+
+        if ($output) {
+            return ucfirst(implode($this->_(' and '), $output));
         } else {
             return $this->_('empty filter');
         }
@@ -79,7 +119,7 @@ class SubjectModelDependency extends FilterModelDependencyAbstract
      */
     public function getFilterClass()
     {
-        return 'SubjectAppointmentFilter';
+        return 'OrAppointmentFilter';
     }
 
     /**
@@ -89,7 +129,7 @@ class SubjectModelDependency extends FilterModelDependencyAbstract
      */
     public function getFilterName()
     {
-        return $this->_('Subject match');
+        return $this->_('Or combination filter');
     }
 
     /**
@@ -101,13 +141,43 @@ class SubjectModelDependency extends FilterModelDependencyAbstract
      */
     public function getTextSettings()
     {
-        $description = sprintf($this->_('The whole or partial content of the appointment subject.'));
+        $messages = array(
+            'gaf_id' => $this->_('Sub condition may not be the same as this condition.'),
+            $this->_('Filters may be chosen only once.')
+                );
 
         return array(
             'gaf_filter_text1' => array(
-                'label'       => $this->_('Appointment subject'),
-                'description' => $description,
-                'required'    => true,
+                'label'        => $this->_('Filter 1'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                'required'     => true,
+                'validator'    => new \MUtil_Validate_NotEqualTo('gaf_id', $messages),
+                ),
+            'gaf_filter_text2' => array(
+                'label'        => $this->_('Filter 2'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                'required'     => true,
+                'validator'    => new \MUtil_Validate_NotEqualTo(array('gaf_id', 'gaf_filter_text1'), $messages),
+                ),
+            'gaf_filter_text3' => array(
+                'label'        => $this->_('Filter 3'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                'validator'    => new \MUtil_Validate_NotEqualTo(
+                        array('gaf_id', 'gaf_filter_text1', 'gaf_filter_text2'),
+                        $messages
+                        ),
+                ),
+            'gaf_filter_text4' => array(
+                'label'        => $this->_('Filter 4'),
+                'elementClass' => 'Select',
+                'multiOptions' => $this->_filters,
+                'validator'    => new \MUtil_Validate_NotEqualTo(
+                        array('gaf_id', 'gaf_filter_text1', 'gaf_filter_text2', 'gaf_filter_text3'),
+                        $messages
+                        ),
                 ),
             );
     }

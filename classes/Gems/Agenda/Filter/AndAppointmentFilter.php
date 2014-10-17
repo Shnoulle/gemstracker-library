@@ -37,7 +37,8 @@
 
 namespace Gems\Agenda\Filter;
 
-use Gems\Agenda\AppointmentFilterAbstract;
+use Gems\Agenda\AppointmentFilterInterface;
+use Gems\Agenda\AppointmentSubFilterAbstract;
 
 /**
  *
@@ -49,6 +50,23 @@ use Gems\Agenda\AppointmentFilterAbstract;
  * @since      Class available since version 1.6.5 16-okt-2014 16:56:07
  */
 // class Gems_Agenda_Filter_AndAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
-class AndAppointmentFilter extends AppointmentFilterAbstract
+class AndAppointmentFilter extends AppointmentSubFilterAbstract
 {
+    /**
+     * Check a filter for a match
+     *
+     * @param \Gems\Agenda\Gems_Agenda_Appointment $appointment
+     * @return boolean
+     */
+    public function matchAppointment(Gems_Agenda_Appointment $appointment)
+    {
+        foreach ($this->_subFilters as $filterObject) {
+            if ($filterObject instanceof AppointmentFilterInterface) {
+                if (! $filterObject->matchAppointment($appointment)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

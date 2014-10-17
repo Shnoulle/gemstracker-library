@@ -198,6 +198,16 @@ class Gems_Agenda_Appointment extends Gems_Registry_TargetAbstract
     }
 
     /**
+     * The cooment to the appointment
+     *
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->_gemsData['gap_comment'];
+    }
+
+    /**
      * Return the appointment id
      *
      * @return int
@@ -281,6 +291,16 @@ class Gems_Agenda_Appointment extends Gems_Registry_TargetAbstract
     public function getRespondentId()
     {
         return $this->_gemsData['gap_id_user'];
+    }
+
+    /**
+     * The subject of the appointment
+     *
+     * @return string
+     */
+    public function getSubject()
+    {
+        return $this->_gemsData['gap_subject'];
     }
 
     /**

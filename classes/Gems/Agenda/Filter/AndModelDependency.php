@@ -59,13 +59,13 @@ class AndModelDependency extends FilterModelDependencyAbstract
 
     /**
      *
-     * @var Gems_Agenda
+     * @var \Gems_Agenda
      */
     protected $agenda;
 
     /**
      *
-     * @var Gems_Util
+     * @var \Gems_Util
      */
     protected $util;
 
@@ -141,28 +141,43 @@ class AndModelDependency extends FilterModelDependencyAbstract
      */
     public function getTextSettings()
     {
+        $messages = array(
+            'gaf_id' => $this->_('Sub condition may not be the same as this condition.'),
+            $this->_('Filters may be chosen only once.')
+                );
+
         return array(
             'gaf_filter_text1' => array(
                 'label'        => $this->_('Filter 1'),
                 'elementClass' => 'Select',
                 'multiOptions' => $this->_filters,
                 'required'     => true,
+                'validator'    => new \MUtil_Validate_NotEqualTo('gaf_id', $messages),
                 ),
             'gaf_filter_text2' => array(
                 'label'        => $this->_('Filter 2'),
                 'elementClass' => 'Select',
                 'multiOptions' => $this->_filters,
                 'required'     => true,
+                'validator'    => new \MUtil_Validate_NotEqualTo(array('gaf_id', 'gaf_filter_text1'), $messages),
                 ),
             'gaf_filter_text3' => array(
                 'label'        => $this->_('Filter 3'),
                 'elementClass' => 'Select',
                 'multiOptions' => $this->_filters,
+                'validator'    => new \MUtil_Validate_NotEqualTo(
+                        array('gaf_id', 'gaf_filter_text1', 'gaf_filter_text2'),
+                        $messages
+                        ),
                 ),
             'gaf_filter_text4' => array(
                 'label'        => $this->_('Filter 4'),
                 'elementClass' => 'Select',
                 'multiOptions' => $this->_filters,
+                'validator'    => new \MUtil_Validate_NotEqualTo(
+                        array('gaf_id', 'gaf_filter_text1', 'gaf_filter_text2', 'gaf_filter_text3'),
+                        $messages
+                        ),
                 ),
             );
     }

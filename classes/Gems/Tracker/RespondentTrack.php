@@ -422,7 +422,7 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
             ELSE MAX(COALESCE(gto_completion_time, gto_valid_until))
             END as enddate";
 
-        $tokenSelect = $this->tracker->getTokenSelect(array($maxExpression));
+        $tokenSelect = $this->tracker->getTokenSelect(array(new Zend_Db_Expr($maxExpression)));
         $tokenSelect->andReceptionCodes(array())
                 ->andRounds(array())
                 ->forRespondentTrack($this->_respTrackId)
@@ -995,8 +995,8 @@ class Gems_Tracker_RespondentTrack extends Gems_Registry_TargetAbstract
      */
     public function recalculateFields($userId)
     {
-        $respTrack->setFieldData($respTrack->getFieldData(), $userId);
-        return $respTrack->checkTrackTokens($userId);
+        $this->setFieldData($this->getFieldData(), $userId);
+        return $this->checkTrackTokens($userId);
     }
 
     /**

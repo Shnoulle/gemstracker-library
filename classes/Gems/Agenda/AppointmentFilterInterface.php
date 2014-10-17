@@ -46,8 +46,35 @@ namespace Gems\Agenda;
  * @license    New BSD License
  * @since      Class available since version 1.6.5 13-okt-2014 20:00:03
  */
-// class Gems_Agenda_AppointmentFilterInterface
-class AppointmentFilterInterface extends \Serializable
+// interface Gems_Agenda_AppointmentFilterInterface
+interface AppointmentFilterInterface
 {
+    /**
+     * Load the object from a data array
+     *
+     * @param array $data
+     */
+    public function exchangeArray(array $data);
 
+    /**
+     * The filter id
+     *
+     * @return int
+     */
+    public function getFilterId();
+
+    /**
+     * Check a filter for a match
+     *
+     * @param \Gems\Agenda\Gems_Agenda_Appointment $appointment
+     * @return boolean
+     */
+    public function matchAppointment(Gems_Agenda_Appointment $appointment);
+
+    /**
+     * When true processing stops when there is a match.
+     *
+     * @return boolean
+     */
+    public function stopOnMatch();
 }

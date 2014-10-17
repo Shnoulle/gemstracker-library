@@ -68,6 +68,7 @@ class AppointmentFilterModel extends \Gems_Model_JoinModel
      */
     protected $filterDependencies = array(
         'AndModelDependency',
+        'OrModelDependency',
         'SqlLikeModelDependency',
         'SubjectModelDependency',
     );
@@ -179,6 +180,10 @@ class AppointmentFilterModel extends \Gems_Model_JoinModel
         reset($this->filterOptions);
         $default = key($this->filterOptions);
         $this->set('gaf_class',         'default', $default, 'onchange', 'this.form.submit();');
+
+        // gaf_id is not needed for some validators
+        $this->set('gaf_id',            'elementClass', 'Hidden');
+
         $this->set('gaf_calc_name',     'elementClass', 'Exhibitor');
         $this->setOnSave('gaf_calc_name', array($this, 'calcultateName'));
         $this->set('gaf_stop_on_match', 'elementClass', 'Checkbox');
@@ -200,18 +205,23 @@ class AppointmentFilterModel extends \Gems_Model_JoinModel
     protected function loadFilterDependencies($activateDependencies = true)
     {
         if (! $this->filterOptions) {
-            // $this->filterOptions = array();
+            $maxLength = $this->get('gaf_calc_name', 'maxlength');
+
+            $this->filterOptions = array();
             foreach ($this->filterDependencies as $dependencyClass) {
                 $dependency = $this->agenda->newFilterObject($dependencyClass);
                 // if ($dependency instanceof Gems_Agenda_FilterModelDependencyAbstract) {
                 if ($dependency instanceof FilterModelDependencyAbstract) {
+
                     $this->filterOptions[$dependency->getFilterClass()] = $dependency->getFilterName();
 
                     if ($activateDependencies) {
+                        $dependency->setMaximumCalcLength($maxLength);
                         $this->addDependency($dependency);
                     }
                 }
             }
+            asort($this->filterOptions);
         }
 
         return $this->filterOptions;

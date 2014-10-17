@@ -66,6 +66,13 @@ abstract class FilterModelDependencyAbstract extends \MUtil_Model_Dependency_Val
     protected $_fieldCount = 4;
 
     /**
+     * The maximum length of the calculated name
+     *
+     * @var int
+     */
+    protected $_maxNameCalcLength = 200;
+
+    /**
      * Called after the check that all required registry values
      * have been set correctly has run.
      *
@@ -80,7 +87,7 @@ abstract class FilterModelDependencyAbstract extends \MUtil_Model_Dependency_Val
 
         // Make sure the calculated name is saved
         if (! isset($switches['gaf_calc_name'], $switches['gaf_calc_name'][$setOnSave])) {
-            $switches['gaf_calc_name'][$setOnSave] = array($this, 'calcultateName');
+            $switches['gaf_calc_name'][$setOnSave] = array($this, 'calcultateAndCheckName');
         }
 
         // Make sure the class name is always saved
@@ -96,6 +103,23 @@ abstract class FilterModelDependencyAbstract extends \MUtil_Model_Dependency_Val
         }
 
         $this->addSwitches(array($className => $switches));
+    }
+
+    /**
+     * A ModelAbstract->setOnSave() function that returns the input
+     * date as a valid date.
+     *
+     * @see MUtil_Model_ModelAbstract
+     *
+     * @param mixed $value The value being saved
+     * @param boolean $isNew True when a new item is being saved
+     * @param string $name The name of the current field
+     * @param array $context Optional, the other values being saved
+     * @return Zend_Date
+     */
+    public function calcultateAndCheckName($value, $isNew = false, $name = null, array $context = array())
+    {
+        return substr($this->calcultateName($value, $isNew, $name, $context), 0, $this->_maxNameCalcLength);
     }
 
     /**
@@ -134,4 +158,17 @@ abstract class FilterModelDependencyAbstract extends \MUtil_Model_Dependency_Val
      * @return array gaf_filter_textN => array(modelFieldName => fieldValue)
      */
     abstract public function getTextSettings();
+
+    /**
+     * Set the maximum length of the calculated name field
+     * 
+     * @param int $length
+     * @return \Gems\Agenda\FilterModelDependencyAbstract
+     */
+    public function setMaximumCalcLength($length = 200)
+    {
+        $this->_maxNameCalcLength = $length;
+
+        return $this;
+    }
 }

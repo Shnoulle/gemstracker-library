@@ -314,17 +314,18 @@ class Gems_Tracker_Model_FieldMaintenanceModel extends MUtil_Model_UnionModel
                 $translated = $this->util->getTranslated();
 
                 $this->set('gtf_filter_id', 'label', $this->_('Automatic link'),
+                        'description', $this->_('Automatically link an appointment when it passes this filter.'),
                         'multiOptions', $translated->getEmptyDropdownArray() + $filters,
                         'onchange', 'this.form.submit();'
                         );
                 $this->set('gtf_create_track', 'label', $this->_('Create track'),
-                        // 'elementClass', (isset($data['gtf_filter_id']) && $data['gtf_filter_id'] ? 'Checkbox' : 'Hidden'),
+                        'description', $this->_('Create a track if the respondent does not have an open track for this value.'),
                         'multiOptions', $translated->getYesNo(),
                         'onclick', 'this.form.submit();'
                         );
                 $this->set('gtf_create_wait_days',
-                        'label', $this->_('Days between tracks') //,
-                        // 'elementClass', (isset($data['gtf_create_track']) && $data['gtf_create_track'] ? 'Text' : 'Hidden')
+                        'label', $this->_('Days between tracks'),
+                        'description', $this->_('Any previous track must have an end date at least this many days in the past.')
                         );
 
                 // $this->addDependency(new Gems_Tracker_Model_Dependency_AppointmentMaintenanceDependency());

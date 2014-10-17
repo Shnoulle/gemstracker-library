@@ -51,4 +51,96 @@ use Gems\Agenda\AppointmentFilterAbstract;
 // class Gems_Agenda_Filter_SqlLikeAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
 class SqlLikeAppointmentFilter extends AppointmentFilterAbstract
 {
+    /**
+     * The activities that this filter matches or true when not matching against activities
+     *
+     * @var array activity_id => activity_id
+     */
+    protected $_activities;
+
+    /**
+     * The procdures that this filter matches or true when not matching against procdures
+     *
+     * @var array procedure_id => procedure_id
+     */
+    protected $_procedures;
+
+    /**
+     *
+     * @var \Zend_Db_Adapter_Abstract
+     */
+    protected $db;
+
+    /**
+     * Override this function when you need to perform any actions when the data is loaded.
+     *
+     * Test for the availability of variables as these objects can be loaded data first after
+     * deserialization or registry variables first after normal instantiation.
+     *
+     * That is why this function called both at the end of afterRegistry() and after exchangeArray(),
+     * but NOT after unserialize().
+     *
+     * After this the object should be ready for serialization
+     */
+    protected function afterLoad()
+    {
+        if ($this->_data &&
+                $this->db instanceof \Zend_Db_Adapter_Abstract &&
+                !($this->_activities || $this->_procedures)) {
+
+            if ($this->_data['gaf_filter_text1']) {
+                $sqlActivites = "SELECT gaa_id_activity, gaa_id_activity
+                    FROM gems__agenda_activities
+                    WHERE gaa_active = 1 AND gaa_name LIKE '%s'
+                    ORDER BY gaa_id_activity";
+
+                $this->_activities = $this->db->fetchPairs(sprintf(
+                        $sqlActivites,
+                        addslashes($this->_data['gaf_filter_text1']))
+                        );
+            } else {
+                $this->_activities = true;
+            }
+
+            if ($this->_data['gaf_filter_text2'] || $this->_data['gaf_filter_text2']) {
+                $sqlProcedures = "SELECT gapr_id_procedure, gapr_id_procedure
+                    FROM gems__agenda_procedures
+                    WHERE gapr_active = 1 ";
+
+
+                if ($this->_data['gaf_filter_text2']) {
+                    $sqlProcedures .= sprintf(
+                            " AND gapr_name LIKE '%s' ",
+                             addslashes($this->_data['gaf_filter_text2'])
+                            );
+                }
+                if ($this->_data['gaf_filter_text3']) {
+                    $sqlProcedures .= sprintf(
+                            " AND gapr_name NOT LIKE '%s' ",
+                             addslashes($this->_data['gaf_filter_text3'])
+                            );
+                }
+
+                $sqlProcedures .= "ORDER BY gapr_id_procedure";
+
+                $this->_procedures = $this->db->fetchPairs($sqlProcedures);
+            } else {
+                $this->_procedures = true;
+            }
+        }
+    }
+
+    /**
+     * Check a filter for a match
+     *
+     * @param \Gems\Agenda\Gems_Agenda_Appointment $appointment
+     * @return boolean
+     */
+    public function matchAppointment(\Gems_Agenda_Appointment $appointment)
+    {
+        if (! (isset($this->_activities[$appointment->getActivityId()]) || ($this->_activities === true))) {
+            return false;
+        }
+        return isset($this->_procedures[$appointment->getActivityId()]) || ($this->_procedures === true);
+    }
 }

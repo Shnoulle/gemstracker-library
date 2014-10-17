@@ -18,7 +18,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL MAGNAFACTA BE LIABLE FOR ANY
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -32,12 +32,13 @@
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @version    $Id: SubjectAppointmentFilter.php $
+ * @version    $Id: AndAppointmentFilter.php $
  */
 
 namespace Gems\Agenda\Filter;
 
-use Gems\Agenda\AppointmentFilterAbstract;
+use Gems\Agenda\AppointmentFilterInterface;
+use Gems\Agenda\AppointmentSubFilterAbstract;
 
 /**
  *
@@ -46,10 +47,10 @@ use Gems\Agenda\AppointmentFilterAbstract;
  * @subpackage Agenda
  * @copyright  Copyright (c) 2014 Erasmus MC
  * @license    New BSD License
- * @since      Class available since version 1.6.5 13-okt-2014 20:02:33
+ * @since      Class available since version 1.6.5 16-okt-2014 16:56:07
  */
-// class Gems_Agenda_Filter_SubjectAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
-class SubjectAppointmentFilter extends AppointmentFilterAbstract
+// class Gems_Agenda_Filter_OrAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
+class OrAppointmentFilter extends AppointmentSubFilterAbstract
 {
     /**
      * Check a filter for a match
@@ -57,8 +58,15 @@ class SubjectAppointmentFilter extends AppointmentFilterAbstract
      * @param \Gems\Agenda\Gems_Agenda_Appointment $appointment
      * @return boolean
      */
-    public function matchAppointment(\Gems_Agenda_Appointment $appointment)
+    public function matchAppointment(Gems_Agenda_Appointment $appointment)
     {
-        return \MUtil_String::contains($appointment->getSubject(), $this->_data['gaf_filter_text1']);
+        foreach ($this->_subFilters as $filterObject) {
+            if ($filterObject instanceof AppointmentFilterInterface) {
+                if ($filterObject->matchAppointment($appointment)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
