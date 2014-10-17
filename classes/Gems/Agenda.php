@@ -885,7 +885,7 @@ class Gems_Agenda extends Gems_Loader_TargetLoaderAbstract
      */
     public function newFilterObject($className)
     {
-        return $this->_loadClass("Filter_$className", true);
+        return $this->_loadClass("Filter\\$className", true);
     }
 
     /**

@@ -94,7 +94,7 @@ class Gems_Default_AgendaFilterAction extends Gems_Controller_ModelSnippetAction
 
         if ($detailed) {
             if (('edit' == $action) || ('create' == $action)) {
-                $model->applyEditSettings();
+                $model->applyEditSettings(('create' == $action));
             } else {
                 $model->applyDetailSettings();
             }

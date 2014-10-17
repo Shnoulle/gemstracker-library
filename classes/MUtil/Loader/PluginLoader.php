@@ -47,6 +47,17 @@
 class MUtil_Loader_PluginLoader extends Zend_Loader_PluginLoader
 {
     /**
+     * Normalize plugin name
+     *
+     * @param  string $name
+     * @return string
+     */
+    protected function _formatName($name)
+    {
+        return strtr(ucfirst((string) $name), '\\', '_');
+    }
+
+    /**
      * Add the default autoloader to this plugin loader.
      *
      * @param boolean $prepend Put path at the beginning of the stack, the default is false
@@ -332,8 +343,15 @@ class MUtil_Loader_PluginLoader extends Zend_Loader_PluginLoader
         $found     = false;
         $classFile = str_replace('_', DIRECTORY_SEPARATOR, $name) . '.php';
         $incFile   = self::getIncludeFileCache();
+        MUtil_Echo::track($registry);
         foreach ($registry as $prefix => $paths) {
             $className = $prefix . $name;
+            $nsName    = strtr($className, '_', '\\');
+            MUtil_Echo::track($className, $nsName);
+
+            if (class_exists($nsName, false)) {
+                $className = $nsName;
+            }
 
             if (class_exists($className, false)) {
                 $found = true;
@@ -348,6 +366,10 @@ class MUtil_Loader_PluginLoader extends Zend_Loader_PluginLoader
                 if (file_exists($loadFile)) {
                     // include_once $loadFile;
                     include $loadFile; // Is faster
+                    if (class_exists($nsName, false)) {
+                        $className = $nsName;
+                    }
+
                     if (class_exists($className, false)) {
                         if (null !== $incFile) {
                             self::_appendIncFile($loadFile);
@@ -360,6 +382,7 @@ class MUtil_Loader_PluginLoader extends Zend_Loader_PluginLoader
         }
 
         if (!$found) {
+            MUtil_Echo::track($name);
             if (!$throwExceptions) {
                 return false;
             }

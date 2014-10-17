@@ -35,6 +35,10 @@
  * @version    $Id: SubjectAppointmentFilter.php $
  */
 
+namespace Gems\Agenda\Filter;
+
+use Gems\Agenda\AppointmentFilterAbstract;
+
 /**
  *
  *
@@ -44,6 +48,7 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 13-okt-2014 20:02:33
  */
-class Gems_Agenda_Filter_SubjectAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
+// class Gems_Agenda_Filter_SubjectAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
+class SubjectAppointmentFilter extends AppointmentFilterAbstract
 {
 }

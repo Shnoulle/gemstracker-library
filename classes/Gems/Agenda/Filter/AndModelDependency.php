@@ -35,6 +35,10 @@
  * @version    $Id: AndModelDependency.php $
  */
 
+namespace Gems\Agenda\Filter;
+
+use Gems\Agenda\FilterModelDependencyAbstract;
+
 /**
  *
  *
@@ -44,7 +48,8 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 16-okt-2014 16:56:22
  */
-class Gems_Agenda_Filter_AndModelDependency extends Gems_Agenda_FilterModelDependencyAbstract
+// class Gems_Agenda_Filter_AndModelDependency extends Gems_Agenda_FilterModelDependencyAbstract
+class AndModelDependency extends FilterModelDependencyAbstract
 {
     /**
      *
@@ -81,7 +86,7 @@ class Gems_Agenda_Filter_AndModelDependency extends Gems_Agenda_FilterModelDepen
      * A ModelAbstract->setOnSave() function that returns the input
      * date as a valid date.
      *
-     * @see MUtil_Model_ModelAbstract
+     * @see \MUtil_Model_ModelAbstract
      *
      * @param mixed $value The value being saved
      * @param boolean $isNew True when a new item is being saved

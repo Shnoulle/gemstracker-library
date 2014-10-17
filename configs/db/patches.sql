@@ -40,7 +40,7 @@ ALTER TABLE gems__respondent2org
 ALTER TABLE `gems__patches` CHANGE `gpa_result` `gpa_result` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;
 
 -- PATCH: datestamp to submitdate
-TABLE  `gems__surveys` CHANGE  `gsu_completion_field`  `gsu_completion_field` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  'submitdate',
+ALTER TABLE  `gems__surveys` CHANGE  `gsu_completion_field`  `gsu_completion_field` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  'submitdate',
 CHANGE  `gsu_followup_field`  `gsu_followup_field` VARCHAR( 20 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT  'submitdate';
 
 UPDATE `gems__surveys` SET `gsu_completion_field` = 'submitdate' WHERE  `gsu_completion_field` = 'datestamp';

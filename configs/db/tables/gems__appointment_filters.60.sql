@@ -1,19 +1,21 @@
 
 CREATE TABLE if not exists gems__appointment_filters (
         gaf_id                  bigint unsigned auto_increment not null,
+        gaf_class               varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' not null,
+
         gaf_manual_name         varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' null,
         gaf_calc_name           varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' not null,
 
         gaf_id_order            int not null default 10,
-        gaf_active              boolean not null default 1,
-
-        gaf_class               varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' not null,
 
         -- Generic text fields so the classes can fill them as they please
         gaf_filter_text1        varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' null,
         gaf_filter_text2        varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' null,
         gaf_filter_text3        varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' null,
         gaf_filter_text4        varchar(200) CHARACTER SET 'utf8' COLLATE 'utf8_general_ci' null,
+
+        gaf_stop_on_match       boolean not null default 1,
+        gaf_active              boolean not null default 1,
 
         gaf_changed             timestamp not null default current_timestamp on update current_timestamp,
         gaf_changed_by          bigint unsigned not null,

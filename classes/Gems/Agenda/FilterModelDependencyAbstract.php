@@ -35,6 +35,8 @@
  * @version    $Id: FilterModelDependencyAbstract.php $
  */
 
+namespace Gems\Agenda;
+
 /**
  * Default dependency for any AppointFilter
  *
@@ -44,7 +46,8 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 15-okt-2014 18:10:36
  */
-abstract class Gems_Agenda_FilterModelDependencyAbstract extends MUtil_Model_Dependency_ValueSwitchDependency
+// abstract class Gems_Agenda_FilterModelDependencyAbstract extends MUtil_Model_Dependency_ValueSwitchDependency
+abstract class FilterModelDependencyAbstract extends \MUtil_Model_Dependency_ValueSwitchDependency
 {
     /**
      * Array of name => name of items dependency depends on.
@@ -72,7 +75,7 @@ abstract class Gems_Agenda_FilterModelDependencyAbstract extends MUtil_Model_Dep
     {
         parent::afterRegistry();
 
-        $setOnSave = MUtil_Model_ModelAbstract::SAVE_TRANSFORMER;
+        $setOnSave = \MUtil_Model_ModelAbstract::SAVE_TRANSFORMER;
         $switches  = $this->getTextSettings();
 
         // Make sure the calculated name is saved

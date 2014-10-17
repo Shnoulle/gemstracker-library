@@ -35,6 +35,8 @@
  * @version    $Id: AppointmentFilterModel.php $
  */
 
+namespace Gems\Agenda;
+
 /**
  *
  *
@@ -44,13 +46,20 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 15-okt-2014 13:07:11
  */
-class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
+// class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
+class AppointmentFilterModel extends \Gems_Model_JoinModel
 {
     /**
      *
-     * @var Gems_Agenda
+     * @var \Gems_Agenda
      */
     protected $agenda;
+
+    /**
+     *
+     * @var \Zend_Db_Adapter_Abstract
+     */
+    protected $db;
 
     /**
      * The filter dependency class names, the parts after *_Agenda_Filter_
@@ -94,6 +103,8 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
     {
         $this->loadFilterDependencies(false);
 
+        $yesNo = $this->util->getTranslated()->getYesNo();
+
         $this->set('gaf_class', 'label', $this->_('Filter type'),
                 'description', $this->_('Determines what is filtered how.'),
                 'multiOptions', $this->filterOptions
@@ -103,8 +114,12 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
         $this->set('gaf_id_order', 'label', $this->_('Order'),
                 'description', $this->_('Display order')
                 );
+        $this->set('gaf_stop_on_match', 'label', $this->_('Stop on match'),
+                'description', $this->_('Stop looking for other filter matches when this fitler is triggered.'),
+                'multiOptions', $yesNo
+                );
         $this->set('gaf_active', 'label', $this->_('Active'),
-                'multiOptions', $this->util->getTranslated()->getYesNo()
+                'multiOptions', $yesNo
                 );
 
         return $this;
@@ -119,6 +134,10 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
     {
         $this->loadFilterDependencies(true);
 
+        $yesNo = $this->util->getTranslated()->getYesNo();
+
+        $this->resetOrder();
+
         $this->set('gaf_class', 'label', $this->_('Filter type'),
                 'description', $this->_('Determines what is filtered how.'),
                 'multiOptions', $this->filterOptions
@@ -129,8 +148,20 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
         $this->set('gaf_id_order', 'label', $this->_('Order'),
                 'description', $this->_('Display order')
                 );
+
+        // Set the order
+        $this->set('gaf_filter_text1');
+        $this->set('gaf_filter_text2');
+        $this->set('gaf_filter_text3');
+        $this->set('gaf_filter_text4');
+
+        $this->set('gaf_stop_on_match', 'label', $this->_('Stop on match'),
+                'description', $this->_('Stop looking for other filter matches when this fitler is triggered.'),
+                'multiOptions', $yesNo,
+                'order'
+                );
         $this->set('gaf_active', 'label', $this->_('Active'),
-                'multiOptions', $this->util->getTranslated()->getYesNo()
+                'multiOptions', $yesNo
                 );
 
         return $this;
@@ -141,16 +172,22 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
      *
      * @return \Gems_Agenda_AppointmentFilterModelAbstract
      */
-    public function applyEditSettings()
+    public function applyEditSettings($create = false)
     {
         $this->applyDetailSettings();
 
         reset($this->filterOptions);
         $default = key($this->filterOptions);
-        $this->set('gaf_class', 'default', $default, 'onchange', 'this.form.submit();');
-        $this->set('gaf_calc_name', 'elementClass', 'Exhibitor');
+        $this->set('gaf_class',         'default', $default, 'onchange', 'this.form.submit();');
+        $this->set('gaf_calc_name',     'elementClass', 'Exhibitor');
         $this->setOnSave('gaf_calc_name', array($this, 'calcultateName'));
-        $this->set('gaf_active',    'elementClass', 'Checkbox');
+        $this->set('gaf_stop_on_match', 'elementClass', 'Checkbox');
+        $this->set('gaf_active',        'elementClass', 'Checkbox');
+
+        if ($create) {
+            $default = $this->db->fetchOne("SELECT MAX(gaf_id_order) FROM gems__appointment_filters");
+            $this->set('gaf_id_order', 'default', intval($default) + 10);
+        }
 
         return $this;
     }
@@ -166,7 +203,8 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
             // $this->filterOptions = array();
             foreach ($this->filterDependencies as $dependencyClass) {
                 $dependency = $this->agenda->newFilterObject($dependencyClass);
-                if ($dependency instanceof Gems_Agenda_FilterModelDependencyAbstract) {
+                // if ($dependency instanceof Gems_Agenda_FilterModelDependencyAbstract) {
+                if ($dependency instanceof FilterModelDependencyAbstract) {
                     $this->filterOptions[$dependency->getFilterClass()] = $dependency->getFilterName();
 
                     if ($activateDependencies) {
@@ -175,7 +213,7 @@ class Gems_Agenda_AppointmentFilterModel extends Gems_Model_JoinModel
                 }
             }
         }
-        
+
         return $this->filterOptions;
     }
 }

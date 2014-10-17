@@ -35,6 +35,10 @@
  * @version    $Id: SqlLikeAppointmentFilter.php $
  */
 
+namespace Gems\Agenda\Filter;
+
+use Gems\Agenda\AppointmentFilterAbstract;
+
 /**
  *
  *
@@ -44,6 +48,7 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 13-okt-2014 20:01:38
  */
-class Gems_Agenda_Filter_SqlLikeAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
+// class Gems_Agenda_Filter_SqlLikeAppointmentFilter extends Gems_Agenda_AppointmentFilterAbstract
+class SqlLikeAppointmentFilter extends AppointmentFilterAbstract
 {
 }

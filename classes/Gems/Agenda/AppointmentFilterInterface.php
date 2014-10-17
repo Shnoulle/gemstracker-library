@@ -35,6 +35,8 @@
  * @version    $Id: AppointmentFilterInterface.php $
  */
 
+namespace Gems\Agenda;
+
 /**
  *
  *
@@ -44,7 +46,8 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 13-okt-2014 20:00:03
  */
-class Gems_Agenda_AppointmentFilterInterface
+// class Gems_Agenda_AppointmentFilterInterface
+class AppointmentFilterInterface extends \Serializable
 {
-    
+
 }

@@ -35,6 +35,8 @@
  * @version    $Id: AppointmentFilterAbstract.php $
  */
 
+namespace Gems\Agenda;
+
 /**
  *
  *
@@ -44,6 +46,7 @@
  * @license    New BSD License
  * @since      Class available since version 1.6.5 13-okt-2014 20:13:01
  */
-abstract class Gems_Agenda_AppointmentFilterAbstract implements Gems_Agenda_AppointmentFilterInterface
+// abstract class Gems_Agenda_AppointmentFilterAbstract implements Gems_Agenda_AppointmentFilterInterface
+abstract class AppointmentFilterAbstract implements AppointmentFilterInterface
 {
 }
