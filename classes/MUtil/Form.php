@@ -202,7 +202,7 @@ class MUtil_Form extends \Zend_Form implements \MUtil_Registry_TargetInterface
         \MUtil_JQuery::enableView($view);
 
         if (false === $view->getPluginLoader('helper')->getPaths('MUtil_JQuery_View_Helper')) {
-            $view->addHelperPath('MUtil/JQuery/View/Helper', 'MUtil_JQuery_View_Helper');
+            $view->addHelperPath(__DIR__ . '/JQuery/View/Helper', 'MUtil_JQuery_View_Helper');
         }
     }
 
@@ -235,7 +235,7 @@ class MUtil_Form extends \Zend_Form implements \MUtil_Registry_TargetInterface
             \MUtil_JQuery::enableForm($this);
 
             //$this->addPrefixPath('MUtil_JQuery_Form_Decorator', 'MUtil/JQuery/Form/Decorator/', \Zend_Form::DECORATOR);
-            $this->addPrefixPath('MUtil_JQuery_Form_Element', 'MUtil/JQuery/Form/Element/', \Zend_Form::ELEMENT);
+            $this->addPrefixPath('MUtil_JQuery_Form_Element', __DIR__ . '/JQuery/Form/Element/', \Zend_Form::ELEMENT);
 
             $this->_activateJQueryView();
 
@@ -474,7 +474,7 @@ class MUtil_Form extends \Zend_Form implements \MUtil_Registry_TargetInterface
 
             $this->_loaders[$type] = new \MUtil_Loader_PluginLoader(array(
                 'Zend_'  . $prefixSegment . '_' => 'Zend/'  . $pathSegment . '/',
-                'MUtil_' . $prefixSegment . '_' => 'MUtil/' . $pathSegment . '/',
+                'MUtil_' . $prefixSegment . '_' => __DIR__ . DIRECTORY_SEPARATOR . $pathSegment . '/',
                 ));
         }
 

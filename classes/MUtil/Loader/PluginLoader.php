@@ -349,11 +349,11 @@ class MUtil_Loader_PluginLoader extends \Zend_Loader_PluginLoader
             $className = $prefix . $name;
             $nsName    = strtr($className, '_', '\\');
 
-            if (class_exists($nsName, false)) {
+            if (@class_exists($nsName, true)) {
                 $className = $nsName;
             }
 
-            if (class_exists($className, false)) {
+            if (@class_exists($className, true)) {
                 $found = true;
                 break;
             }
@@ -365,7 +365,7 @@ class MUtil_Loader_PluginLoader extends \Zend_Loader_PluginLoader
                 // if (\Zend_Loader::isReadable($loadFile)) {
                 if (file_exists($loadFile)) {
                     // include_once $loadFile;
-                    include $loadFile; // Is faster
+                    require_once $loadFile;
                     if (class_exists($nsName, false)) {
                         $className = $nsName;
                     }

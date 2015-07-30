@@ -50,21 +50,12 @@ mb_internal_encoding(APPLICATION_ENCODING);
 defined('APPLICATION_PATH') || define('APPLICATION_PATH', GEMS_ROOT_DIR . '/application');
 defined('GEMS_PROJECT_NAME_UC') || define('GEMS_PROJECT_NAME_UC', ucfirst(GEMS_PROJECT_NAME));
 
-foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
+foreach (array(__DIR__ . '/../../../autoload.php', __DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
     if (file_exists($file)) {
         require $file;
         break;
     }
 }
-
-set_include_path(
-    APPLICATION_PATH . '/classes' . PATH_SEPARATOR .
-    get_include_path()
-);
-
-
-$autoloader = Zend_Loader_Autoloader::getInstance();
-$autoloader->registerNamespace("NewProject_");
 
 // Create application, bootstrap, and run
 $application = new Zend_Application(

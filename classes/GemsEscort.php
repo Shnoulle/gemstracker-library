@@ -465,7 +465,7 @@ class GemsEscort extends \MUtil_Application_Escort
      */
     protected function _initActionHelpers()
     {
-        \Zend_Controller_Action_HelperBroker::addPrefix('Gems_Controller_Action_Helper');
+        \Zend_Controller_Action_HelperBroker::addPath(__DIR__ . '/Gems/Controller/Action/Helper', 'Gems_Controller_Action_Helper');
     }
 
     /**
@@ -673,9 +673,9 @@ class GemsEscort extends \MUtil_Application_Escort
 
         // Initialize view
         $view = new \Zend_View();
-        $view->addHelperPath('MUtil/View/Helper', 'MUtil_View_Helper');
-        $view->addHelperPath('MUtil/Less/View/Helper', 'MUtil_Less_View_Helper');
-        $view->addHelperPath('Gems/View/Helper', 'Gems_View_Helper');
+        $view->addHelperPath(__DIR__. '/MUtil/View/Helper', 'MUtil_View_Helper');
+        $view->addHelperPath(__DIR__ . 'MUtil/Less/View/Helper', 'MUtil_Less_View_Helper');
+        $view->addHelperPath(__DIR__ . '/Gems/View/Helper', 'Gems_View_Helper');
         $view->headTitle($this->project->getName());
         $view->setEncoding('UTF-8');
         $view->headMeta()->appendHttpEquiv('Content-Type', 'text/html;charset=UTF-8');

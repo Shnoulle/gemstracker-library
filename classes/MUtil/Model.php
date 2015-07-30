@@ -198,7 +198,7 @@ class MUtil_Model
                 if ($loader instanceof \MUtil_Loader_PluginLoader) {
                     $loader->addPrefixPath(
                             $nameSpace . '_Model_' . $subClass,
-                            $nameSpace . DIRECTORY_SEPARATOR . 'Model' . DIRECTORY_SEPARATOR . $subClass);
+                            __DIR__ . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . 'Model' . DIRECTORY_SEPARATOR . $subClass);
                 }
             }
 
@@ -251,7 +251,7 @@ class MUtil_Model
             foreach (self::$_nameSpaces as $nameSpace) {
                 $loader->addPrefixPath(
                         $nameSpace . '_Model_' . ucfirst($prefix),
-                        $nameSpace . DIRECTORY_SEPARATOR . 'Model' . DIRECTORY_SEPARATOR . ucfirst($prefix));
+                        dirname(__DIR__) . DIRECTORY_SEPARATOR . $nameSpace . DIRECTORY_SEPARATOR . 'Model' . DIRECTORY_SEPARATOR . ucfirst($prefix));
             }
             $loader->addFallBackPath();
 

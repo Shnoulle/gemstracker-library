@@ -79,7 +79,7 @@ class MUtil_JQuery extends \ZendX_JQuery
     {
         if (false === $view->getPluginLoader('helper')->getPaths('MUtil_JQuery_View_Helper')) {
             $view->addHelperPath('ZendX/JQuery/View/Helper', 'ZendX_JQuery_View_Helper');
-            $view->addHelperPath('MUtil/JQuery/View/Helper', 'MUtil_JQuery_View_Helper');
+            $view->addHelperPath(__DIR__ . '/JQuery/View/Helper', 'MUtil_JQuery_View_Helper');
         }
     }
 

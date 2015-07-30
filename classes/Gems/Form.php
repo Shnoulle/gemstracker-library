@@ -66,13 +66,13 @@ class Gems_Form extends MUtil_Form
 
         $this->addPrefixPath(GEMS_PROJECT_NAME_UC . '_Form_Decorator', GEMS_PROJECT_NAME_UC . '/Form/Decorator/', Zend_Form::DECORATOR);
         $this->addPrefixPath(GEMS_PROJECT_NAME_UC . '_Form_Element',   GEMS_PROJECT_NAME_UC . '/Form/Element/',   Zend_Form::ELEMENT);
-        $this->addPrefixPath('Gems_Form_Decorator', 'Gems/Form/Decorator/', Zend_Form::DECORATOR);
-        $this->addPrefixPath('Gems_Form_Element',   'Gems/Form/Element/',   Zend_Form::ELEMENT);
+        $this->addPrefixPath('Gems_Form_Decorator', __DIR__ . '/Form/Decorator/', Zend_Form::DECORATOR);
+        $this->addPrefixPath('Gems_Form_Element',   __DIR__ . '/Form/Element/',   Zend_Form::ELEMENT);
 
         $this->addElementPrefixPath(GEMS_PROJECT_NAME_UC . '_Validate', GEMS_PROJECT_NAME_UC . '/Validate/', Zend_Form_Element::VALIDATE);
-        $this->addElementPrefixPath('Gems_Form_Decorator',  'Gems/Form/Decorator/',  Zend_Form_Element::DECORATOR);
-        $this->addElementPrefixPath('Gems_Filter',          'Gems/Filter/',          Zend_Form_Element::FILTER);
-        $this->addElementPrefixPath('Gems_Validate',        'Gems/Validate/',        Zend_Form_Element::VALIDATE);
+        $this->addElementPrefixPath('Gems_Form_Decorator',  __DIR__ . '/Form/Decorator/',  Zend_Form_Element::DECORATOR);
+        $this->addElementPrefixPath('Gems_Filter',          __DIR__ . '/Filter/',          Zend_Form_Element::FILTER);
+        $this->addElementPrefixPath('Gems_Validate',        __DIR__ . '/Validate/',        Zend_Form_Element::VALIDATE);
 
         $this->setDisableTranslator(true);
 
@@ -94,7 +94,7 @@ class Gems_Form extends MUtil_Form
         }
 
         if (false === $view->getPluginLoader('helper')->getPaths('Gems_JQuery_View_Helper')) {
-            $view->addHelperPath('Gems/JQuery/View/Helper', 'Gems_JQuery_View_Helper');
+            $view->addHelperPath(__DIR__ . '/JQuery/View/Helper', 'Gems_JQuery_View_Helper');
         }
     }
 
@@ -126,8 +126,8 @@ class Gems_Form extends MUtil_Form
         if ($this->_no_jquery) {
             parent::activateJQuery();
 
-            $this->addPrefixPath('Gems_JQuery_Form_Decorator', 'Gems/JQuery/Form/Decorator/', Zend_Form::DECORATOR);
-            $this->addPrefixPath('Gems_JQuery_Form_Element', 'Gems/JQuery/Form/Element/', Zend_Form::ELEMENT);
+            $this->addPrefixPath('Gems_JQuery_Form_Decorator', __DIR__ . '/JQuery/Form/Decorator/', Zend_Form::DECORATOR);
+            $this->addPrefixPath('Gems_JQuery_Form_Element', __DIR__ . '/JQuery/Form/Element/', Zend_Form::ELEMENT);
         }
 
         return $this;
