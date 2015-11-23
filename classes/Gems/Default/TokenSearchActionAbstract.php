@@ -144,6 +144,8 @@ abstract class Gems_Default_TokenSearchActionAbstract extends \Gems_Controller_M
     {
         $filter = parent::getSearchFilter();
 
+        unset($filter['AUTO_SEARCH_TEXT_BUTTON']);
+
         if (isset($filter[\Gems_Snippets_AutosearchFormSnippet::PERIOD_DATE_USED])) {
             $where = \Gems_Snippets_AutosearchFormSnippet::getPeriodFilter(
                 $filter,
