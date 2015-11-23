@@ -223,6 +223,9 @@ class Gems_Menu extends \Gems_Menu_MenuAbstract implements \MUtil_Html_HtmlInter
         $page->addShowAction()
                 ->setNamedParameters(\Gems_Model::LOG_ITEM_ID, 'gla_id');
 
+        // LOG FILES CONTROLLER
+        $setup->addFilePage($this->_('Log files'), 'pr.log.files', 'log-file');
+
         // OpenRosa
         $this->addOpenRosaContainer($this->_('OpenRosa'), $setup);
 
