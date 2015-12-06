@@ -1,3 +1,8 @@
+Changes in 1.7.1p5
+============================================================
+  - Speedup: large scale speedup of application
+  - Extension: Log files browser added to Setup
+
 Changes in 1.7.1p4
 ============================================================
   - Fixed bug: changed cache data often not updated after data change

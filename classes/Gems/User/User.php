@@ -888,9 +888,11 @@ class Gems_User_User extends MUtil_Registry_TargetAbstract
      */
     public function getPasswordAge()
     {
-        $date = $this->_getVar('user_password_last_changed');
-        if (MUtil_Date::isDate($date, Zend_Date::ISO_8601)) {
-            $date = new MUtil_Date($date, Zend_Date::ISO_8601);
+        $date = \MUtil_Date::ifDate(
+                $this->_getVar('user_password_last_changed'),
+                array('yyyy-MM-dd HH:mm:ss', Zend_Date::ISO_8601)
+                );
+        if ($date instanceof \MUtil_Date) {
             return abs($date->diffDays());
         } else {
             return 0;
@@ -1501,7 +1503,7 @@ class Gems_User_User extends MUtil_Registry_TargetAbstract
                 } else {
                     $usedOrganizationId = null;
                 }
-                
+
                 // Now update the requestcache to change the oldOrgId to the new orgId
                 // Don't do it when the oldOrgId doesn't match
                 if ($requestCache = $this->session->requestCache) {

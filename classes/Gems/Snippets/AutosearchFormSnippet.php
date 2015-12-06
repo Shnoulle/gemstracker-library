@@ -454,8 +454,8 @@ class Gems_Snippets_AutosearchFormSnippet extends \MUtil_Snippets_SnippetAbstrac
             $inFormat  = \MUtil_Model_Bridge_FormBridge::getFixedOption('date', 'dateFormat');
         }
 
-        $isFrom  = isset($filter['datefrom'])  && $filter['datefrom']  && \MUtil_Date::isDate($filter['datefrom'],  $inFormat);
-        $isUntil = isset($filter['dateuntil']) && $filter['dateuntil'] && \MUtil_Date::isDate($filter['dateuntil'], $inFormat);
+        $isFrom  = isset($filter['datefrom'])  && $filter['datefrom']  && \Zend_Date::isDate($filter['datefrom'],  $inFormat);
+        $isUntil = isset($filter['dateuntil']) && $filter['dateuntil'] && \Zend_Date::isDate($filter['dateuntil'], $inFormat);
         if (! ($isFrom || $isUntil)) {
             return;
         }
