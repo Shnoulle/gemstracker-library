@@ -118,7 +118,11 @@ class Gems_Menu_SubMenuItem extends \Gems_Menu_MenuAbstract
                             $newCondition = \MUtil_Lazy::comp($testValue, '==', $paramValue);
                         }
                         if ($condition instanceof \MUtil_Lazy_LazyInterface) {
-                            $condition = $condition->if($newCondition);
+                            if ($condition instanceof \MUtil_Lazy_LazyAnd) {
+                                $condition->add($newCondition);
+                            } else {
+                                $condition = new \MUtil_Lazy_LazyAnd($condition, $newCondition);
+                            }
                         } else {
                             $condition = $newCondition;
                         }
@@ -1017,6 +1021,7 @@ class Gems_Menu_SubMenuItem extends \Gems_Menu_MenuAbstract
      */
     public function toActionLinkLower($parameterSources_args = null)
     {
+        // return null;
         $parameterSources = func_get_args();
 
         // Use unshift: if a label was specified it is now automatically used
@@ -1033,6 +1038,7 @@ class Gems_Menu_SubMenuItem extends \Gems_Menu_MenuAbstract
      */
     public function toHRefAttribute($parameterSources_args = null)
     {
+        // return null;
         $parameterSources = func_get_args();
 
         $condition = true;

@@ -143,6 +143,22 @@ class MUtil_Echo
     }
 
     /**
+     * Put the function with a name where you want to start counting
+     *
+     * @param string $name Id of
+     */
+    public static function countOccurences($name)
+    {
+        $session = self::getSession();
+
+        if (! isset($session->counts, $session->counts[$name])) {
+            $session->counts[$name] = 1;
+        } else {
+            $session->counts[$name]++;
+        }
+    }
+
+    /**
      * Returns any information to output.
      *
      * @return mixed
@@ -204,14 +220,28 @@ class MUtil_Echo
     {
         $session = self::getSession();
         $content = '';
+        if (isset($session->counts)) {
+            $content .= "<h6>Count results</h6>\n\n";
+            ksort($session->counts);
+            foreach ($session->counts as $name => $count) {
+                $content .= "<b>$name</b> triggered $count times<br/>\n";
+            }
+        }
         if (isset($session->timings)) {
             $content .= "<h6>Timer results</h6>\n\n";
+            ksort($session->timings);
             foreach ($session->timings as $name => $data) {
-                $content .= '<b>' . $name . '</b> total time ' . $data['sum'] . ' in ' . $data['cnt'] .  " times<br/>\n";
+                if ($data['level']) {
+                    $content .= '<b>Unbalanced call for ' . $name . ':</b> function level remains at ' . $data['level'] .  "!<br/>\n";
+                }
+                $content .= '<b>' . $name . '</b> total time ' . $data['sum'] . ' in ' . $data['count'] .  " times<br/>\n";
+                foreach ($data['times'] as $level => $times) {
+                    $content .= '&nbsp;&nbsp;&nbsp;&nbsp;at call level ' . $level . ' total time ' . $times['sum'] . ' in ' . $times['count'] .  " times<br/>\n";
+                }
             }
         }
         if (isset($session->content)) {
-            $content = $session->content;
+            $content .= $session->content;
         }
         $session->unsetAll();
         if ($content) {
@@ -278,24 +308,60 @@ class MUtil_Echo
         }
     }
 
+    /**
+     * Put the function with a name where you want to start timing
+     *
+     * @param string $name Id of
+     */
     public static function timeFunctionStart($name)
     {
         $session = self::getSession();
 
-        $session->timings[$name]['start'] = microtime(true);
-        if (! isset($session->timings[$name]['sum'])) {
-            $session->timings[$name]['cnt'] = 0;
-            $session->timings[$name]['sum'] = 0;
+        if (! isset($session->timings, $session->timings[$name])) {
+            $session->timings[$name] = array(
+                'count' => 0,
+                'level' => 0,
+                'sum'   => 0,
+                'times' => array(),
+            );
         }
+        $level = $session->timings[$name]['level'];
+
+        if (! isset($session->timings[$name]['times'][$level])) {
+            $session->timings[$name]['times'][$level] = array('start' => 0, 'count' => 0, 'sum' => 0);
+        }
+        $session->timings[$name]['times'][$level]['start'] = microtime(true);
+        $session->timings[$name]['level']++;
     }
 
+    /**
+     * Put the function with a name where you want to stop timing,
+     * must match calls timeFunctionStart() exactly
+     *
+     * @param string $name Id of
+     */
     public static function timeFunctionStop($name)
     {
         $session = self::getSession();
 
-        if (isset($session->timings[$name]['start'])) {
-            $session->timings[$name]['cnt']++;
-            $session->timings[$name]['sum'] += (microtime(true) - $session->timings[$name]['start']);
+        if (isset($session->timings[$name])) {
+            $level = $session->timings[$name]['level'] - 1;
+
+            if (isset($session->timings[$name]['times'][$level]['start'])) {
+                $time     = microtime(true) - $session->timings[$name]['times'][$level]['start'];
+
+                $session->timings[$name]['times'][$level]['start'] = null;
+                $session->timings[$name]['times'][$level]['count']++;
+                $session->timings[$name]['times'][$level]['sum'] += $time;
+
+                $session->timings[$name]['count']++;
+                $session->timings[$name]['level']--;
+                $session->timings[$name]['sum'] += $time;
+            } else {
+                self::r("To many stop timing calls for $name at $level.");
+            }
+        } else {
+            self::r("Unknown stop timing call for $name.");
         }
     }
 
