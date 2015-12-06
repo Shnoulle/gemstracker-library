@@ -120,7 +120,7 @@ class Gems_Email_MultiMailForm extends \Gems_Email_EmailFormAbstract
         if ($disabled) {
             if ($tokenData['gto_completion_time']) {
                 $title = $this->escort->_('Survey has been taken.');
-                $menuFind = array('controller' => array('track', 'survey'), 'action' => 'answer');
+                $menuFind = array('controller' => 'track', 'action' => 'answer');
             } elseif (! $tokenData['grs_email']) {
                 $title = $this->escort->_('Respondent does not have an e-mail address.');
                 $menuFind = array('controller' => 'respondent', 'action' => 'edit');
@@ -128,7 +128,7 @@ class Gems_Email_MultiMailForm extends \Gems_Email_EmailFormAbstract
                 $title = $this->escort->_('Survey cannot be taken by a respondent.');
             } else {
                 $title = $this->escort->_('Survey cannot be taken at this moment.');
-                $menuFind = array('controller' => array('track', 'survey'), 'action' => 'edit');
+                $menuFind = array('controller' => 'track', 'action' => 'edit');
             }
         } else {
             $title = null;

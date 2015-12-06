@@ -87,7 +87,6 @@ class Gems_Snippets_Respondent_MailLogSnippet extends \Gems_Snippets_Mail_Log_Ma
         $showLinks = array();
 
         $showLinks[]   = $this->createMenuLink($params, 'track',  'show', $title);
-        $showLinks[]   = $this->createMenuLink($params, 'survey', 'show', $title);
 
         // Remove nulls
         $showLinks   = array_filter($showLinks);

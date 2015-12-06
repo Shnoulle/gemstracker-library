@@ -85,7 +85,6 @@ class Gems_Snippets_Mail_Log_MailLogBrowseSnippet extends \Gems_Snippets_ModelTa
             );
 
         $showLinks[]   = $this->createMenuLink($params, 'track',  'show', $title);
-        $showLinks[]   = $this->createMenuLink($params, 'survey', 'show', $title);
 
         // Remove nulls
         $showLinks   = array_filter($showLinks);
